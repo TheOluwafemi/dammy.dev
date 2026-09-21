@@ -183,7 +183,7 @@ const users = Array.from({ length: 40 }, (_, i) => {
       cells.forEach((c, i) => {
         const changed = prev ? next[i] !== prev[i] : false
         if (prev && changed) next[i] ? joined++ : left++
-        c.style.setProperty('--d', opts.stagger && changed ? `${Math.min(order++, 10) * 30}ms` : '0ms')
+        c.style.setProperty('--d', opts.stagger && changed ? `${Math.min(order++, 6) * 30}ms` : '0ms')
         if (next[i]) c.setAttribute('data-on', '')
         else c.removeAttribute('data-on')
         c.firstElementChild!.textContent = m === 'hash' ? String(values[i]) : ''

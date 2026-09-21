@@ -60,7 +60,6 @@ a {
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
-  border-radius: 2px;
 }
 ::selection {
   background: var(--accent);
@@ -198,27 +197,33 @@ main h1 {
     transform: translateY(8px);
   }
 }
+/* Asymmetric: the outgoing page snaps away, the incoming one settles. A long
+   crossfade leaves two half-transparent pages overlapping, which reads as muddy. */
 ::view-transition-old(root) {
-  animation: vt-out var(--dur-page) var(--ease-out) both;
+  animation: vt-out 100ms var(--ease-out) both;
 }
 ::view-transition-new(root) {
   animation: vt-in var(--dur-page) var(--ease-out) both;
 }
 
-/* Reduced motion means gentler, not zero: keep opacity and colour, remove movement. */
+/* Reduced motion means gentler, not zero: drop movement, keep opacity and colour.
+   Limiting transition-property removes transform/clip-path/layout transitions but
+   leaves the fades that help people follow what changed. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-property: opacity, color, background-color, border-color !important;
     scroll-behavior: auto !important;
   }
+  ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-name: vt-fade-in;
+    animation-name: vt-fade !important;
+    animation-duration: 160ms !important;
   }
-  @keyframes vt-fade-in {
+  @keyframes vt-fade {
     from {
       opacity: 0;
     }
@@ -325,15 +330,18 @@ main h1 {
 .prose h3 {
   position: relative;
 }
-.heading-anchor {
+/* Underlined so it is distinguishable from the heading without relying on colour (WCAG 1.4.1).
+   `.prose a.heading-anchor` matches the specificity of `.prose a:not(.btn)` and comes later. */
+.prose a.heading-anchor {
   margin-inline-start: var(--space-2);
-  color: var(--fg-muted);
-  text-decoration: none;
-  border: 0 !important;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  border-block-end: 0;
   opacity: 0;
   transition: opacity var(--dur-fast) var(--ease);
 }
-.heading-anchor:focus-visible {
+.prose a.heading-anchor:focus-visible {
   opacity: 1;
 }
 @media (hover: hover) and (pointer: fine) {
@@ -343,7 +351,7 @@ main h1 {
   }
 }
 @media (hover: none) {
-  .heading-anchor {
+  .prose a.heading-anchor {
     opacity: 0.5;
   }
 }

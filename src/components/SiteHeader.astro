@@ -147,6 +147,18 @@ import { nav, site } from '../data/site'
     border-radius: calc(var(--radius) - 2px);
   }
 
+  /* No JS: the mobile menu cannot open, so show the links inline instead. */
+  :global(:root:not([data-js])) .bar {
+    flex-wrap: wrap;
+  }
+  :global(:root:not([data-js])) .nav {
+    display: block;
+  }
+  :global(:root:not([data-js])) .menu,
+  :global(:root:not([data-js])) .menu-button {
+    display: none;
+  }
+
   @media (min-width: 40rem) {
     .nav {
       display: block;

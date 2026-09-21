@@ -30,6 +30,10 @@
       transform var(--dur-press) var(--ease-out),
       border-color var(--dur-fast) var(--ease);
   }
+  /* Without JS it cannot do anything, so it is not shown. */
+  :global(:root:not([data-js])) .theme-toggle {
+    display: none;
+  }
   .theme-toggle:active {
     transform: scale(0.97);
   }

@@ -1,0 +1,23 @@
+# Damilola Oluwafemi
+
+> Software engineer in the UK building developer tools and the products around them. Eight years across banking, fintech and crypto. Creator and sole maintainer of Flaghoist, open-source OpenFeature-native feature flags that run on Cloudflare Workers.
+
+## Work
+
+- [Flaghoist](https://dammy.dev/work/flaghoist): case study of an OFREP-native feature-flag service, with 14 npm packages, verified against seven languages
+- [dsl-query-builder](https://dammy.dev/work/dsl-query-builder): zero-dependency TypeScript query builder for OpenSearch and Elasticsearch DSL
+- [Yellowcard](https://dammy.dev/work/yellowcard): frontend engineering on a cryptocurrency exchange across 10 new African markets
+- [All work](https://dammy.dev/work)
+
+## Writing
+
+- [Why Flaghoist speaks OFREP instead of shipping SDKs](https://dammy.dev/writing/why-flaghoist-speaks-ofrep)
+- [Sticky rollouts without storing who is in them](https://dammy.dev/writing/sticky-rollouts)
+- [Running a 14-package release train with changesets](https://dammy.dev/writing/running-a-release-train-with-changesets)
+- [All writing](https://dammy.dev/writing) and [RSS](https://dammy.dev/rss.xml)
+
+## About
+
+- [About and career](https://dammy.dev/about)
+- [CV (PDF)](https://dammy.dev/cv.pdf)
+- [GitHub](https://github.com/TheOluwafemi), [Flaghoist on GitHub](https://github.com/flaghoist/flaghoist), [npm](https://www.npmjs.com/~dammyskillz_)

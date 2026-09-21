@@ -93,6 +93,8 @@ const person = {
         document.addEventListener('astro:before-swap', (e) => {
           e.newDocument.documentElement.dataset.theme = root.dataset.theme
           e.newDocument.documentElement.dataset.js = ''
+          // Any swap means a client-side navigation: the page transition is the entrance, so skip the hero stagger.
+          e.newDocument.documentElement.dataset.navigated = ''
         })
       })()
     </script>

@@ -51,7 +51,7 @@ async function load(name: string): Promise<Pkg> {
       ])
   return {
     name,
-    description: (typeof meta?.description === 'string' && meta.description) || FALLBACK[name],
+    description: ((typeof meta?.description === 'string' && meta.description) || FALLBACK[name]).replaceAll('`', ''),
     downloads: typeof dl?.downloads === 'number' ? dl.downloads : null,
     url: `https://www.npmjs.com/package/${name}`,
   }

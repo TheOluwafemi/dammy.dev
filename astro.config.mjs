@@ -12,7 +12,7 @@ export default defineConfig({
   trailingSlash: 'never',
   build: { format: 'file', inlineStylesheets: 'always' },
   markdown: {
-    shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' } },
+    shikiConfig: { themes: { light: 'github-light-high-contrast', dark: 'github-dark' } },
     // Unified (not the default Sätteri) because rehype-autolink-headings is a rehype plugin.
     // It adds a link to each heading so a section can be shared.
     processor: unified({

@@ -29,6 +29,14 @@ const openSourceIntro =
   title="Damilola Oluwafemi — engineer"
   description="Damilola Oluwafemi is a software engineer in the UK building developer tools and the products around them. Creator of Flaghoist, open-source OpenFeature-native feature flags."
 >
+  <!-- The old site used /#about and /#projects. Fragments never reach the server, so redirect here. -->
+  <script is:inline>
+    ;(() => {
+      const moved = { '#about': '/about', '#projects': '/work' }
+      const to = moved[location.hash]
+      if (to) location.replace(to)
+    })()
+  </script>
   <div class="hero container">
     <h1>{site.name}</h1>
     <p class="statement">I build developer tools and the products around them.</p>
@@ -94,7 +102,7 @@ const openSourceIntro =
       </section>
     )}
 
-    <section class="section" aria-labelledby="contact-h">
+    <section class="section" id="contact" aria-labelledby="contact-h">
       <h2 id="contact-h">Get in touch</h2>
       <p class="prose intro">Want to say hello, work together, or build something? I read everything.</p>
       <CopyEmail />
@@ -136,7 +144,7 @@ const openSourceIntro =
 
   /* Hero entrance (plan 3.4). Content ships visible: keyframes only define `from`,
      `backwards` fill applies it during the delay. Never opacity:0 in the markup. */
-  .hero > * {
+  :global(:root:not([data-navigated])) .hero > * {
     animation: rise var(--dur-base) var(--ease-out) backwards;
   }
   .hero > :nth-child(2) {

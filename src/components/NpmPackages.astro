@@ -60,6 +60,8 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'
   .name {
     grid-column: 1;
     justify-self: start;
+    /* >= 24px tall (WCAG 2.5.8) without changing the visible underline position much */
+    padding-block: 0.3rem;
     font-family: var(--font-mono);
     font-size: var(--text-sm);
     overflow-wrap: anywhere;
