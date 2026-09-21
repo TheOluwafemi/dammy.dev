@@ -9,5 +9,12 @@ export default defineConfig({
   site: 'https://dammy.dev',
   trailingSlash: 'never',
   build: { format: 'file', inlineStylesheets: 'always' },
-  integrations: [mdx(), sitemap()],
+  markdown: {
+    shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' } },
+  },
+  integrations: [
+    mdx(),
+    // Stub pages are noindex until Phase 4 replaces them; keep them out of the sitemap too.
+    sitemap({ filter: (page) => !/\/(writing|about|uses)$/.test(page) }),
+  ],
 })

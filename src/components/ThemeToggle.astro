@@ -92,6 +92,9 @@
 
     root.dataset.vt = 'theme'
     const t = document.startViewTransition(() => apply(next))
+    // A skipped or aborted transition (e.g. hidden tab) rejects these; the theme still applied.
+    t.updateCallbackDone.catch(() => {})
+    t.finished.catch(() => {})
     try {
       await t.ready
       root.animate(

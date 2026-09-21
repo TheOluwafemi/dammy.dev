@@ -224,3 +224,98 @@ main h1 {
     }
   }
 }
+
+/* Long-form content (case studies, later posts) */
+.prose {
+  max-inline-size: var(--measure);
+}
+.prose > * + * {
+  margin-block-start: var(--space-4);
+}
+.prose h2 {
+  margin-block-start: var(--space-12);
+  font-size: var(--text-xl);
+  color: var(--accent);
+}
+.prose h3 {
+  margin-block-start: var(--space-8);
+  font-size: var(--text-lg);
+}
+.prose h2 + *,
+.prose h3 + * {
+  margin-block-start: var(--space-3);
+}
+.prose a:not(.btn) {
+  border-block-end: 1px solid var(--accent);
+  text-decoration: none;
+}
+.prose ul,
+.prose ol {
+  padding-inline-start: 1.25em;
+}
+.prose li + li {
+  margin-block-start: var(--space-2);
+}
+.prose code {
+  padding: 0.1em 0.35em;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+.prose pre {
+  padding: var(--space-4);
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.prose pre code {
+  padding: 0;
+  background: none;
+  border: 0;
+  font-size: inherit;
+}
+.prose table {
+  display: block;
+  overflow-x: auto;
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.prose th,
+.prose td {
+  padding: var(--space-3) var(--space-4);
+  border-block-end: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+.prose th {
+  color: var(--fg-muted);
+  font-weight: 500;
+}
+
+/* Shiki dual themes: light by default, dark when the theme is dark. */
+.astro-code {
+  background-color: var(--bg-subtle) !important;
+}
+:root[data-theme='dark'] .astro-code,
+:root[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark) !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .astro-code,
+  :root:not([data-theme='light']) .astro-code span {
+    color: var(--shiki-dark) !important;
+  }
+}
+
+/* Never leave revealed-on-scroll content hidden in print. */
+@media print {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

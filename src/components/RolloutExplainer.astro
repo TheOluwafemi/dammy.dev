@@ -1,0 +1,223 @@
+---
+// Sticky-rollout explainer (plan 3.7 #1). Buckets are computed here at build time with
+// the same arithmetic Flaghoist's core uses: first 4 bytes of SHA-256("<user>:<flag>") mod 100.
+import { createHash } from 'node:crypto'
+
+const FLAG = 'new-checkout'
+const users = Array.from({ length: 40 }, (_, i) => {
+  const id = `user-${String(i + 1).padStart(2, '0')}`
+  const bucket = createHash('sha256').update(`${id}:${FLAG}`).digest().readUInt32BE(0) % 100
+  return { id, bucket }
+})
+---
+
+<figure class="rollout" data-rollout data-users={JSON.stringify(users.map((u) => u.bucket))}>
+  <div class="controls">
+    <fieldset class="modes">
+      <legend>How is each user assigned?</legend>
+      <label><input type="radio" name="mode" value="hash" checked /> <span>Hash of user and flag <small>(what Flaghoist does)</small></span></label>
+      <label><input type="radio" name="mode" value="random" /> <span>Random on every request</span></label>
+    </fieldset>
+
+    <label class="slider">
+      <span>Rollout for <code>{FLAG}</code>: <output data-pct>25%</output></span>
+      <input type="range" min="0" max="100" step="1" value="25" data-slider aria-valuetext="25 percent" />
+    </label>
+
+    <button type="button" class="reload pressable" data-reload>Reload the page for everyone</button>
+  </div>
+
+  <div class="grid" aria-hidden="true">
+    {users.map((u) => <div class="cell" data-cell title={u.id}><span class="b" data-b></span></div>)}
+  </div>
+
+  <p class="readout" data-readout></p>
+  <noscript><p class="readout">This demo needs JavaScript. The rule it shows: a user is in the rollout when the first four bytes of SHA-256("user:flag"), modulo 100, are below the percentage.</p></noscript>
+  <span class="visually-hidden" role="status" data-live></span>
+
+  <figcaption>
+    Each square is one user. A user has the feature when their bucket (0 to 99) is below the rollout percentage.
+    Drag the slider with random assignment and watch people lose a feature you were only ever adding to.
+  </figcaption>
+</figure>
+
+<style>
+  .rollout {
+    margin-block: var(--space-8);
+    padding: var(--space-6);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: grid;
+    gap: var(--space-6);
+  }
+  .controls {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .modes {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    border: 0;
+  }
+  .modes legend {
+    margin-block-end: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+  }
+  .modes label {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    cursor: pointer;
+  }
+  .modes small {
+    color: var(--fg-muted);
+  }
+  .slider {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .slider input {
+    inline-size: 100%;
+    accent-color: var(--accent);
+  }
+  output {
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .reload {
+    justify-self: start;
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .reload:hover {
+      border-color: var(--fg-muted);
+    }
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: var(--space-1);
+  }
+  .cell {
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    background: var(--bg);
+    color: var(--fg-muted);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-variant-numeric: tabular-nums;
+    transform: scale(0.9);
+    transition:
+      background-color 120ms var(--ease),
+      color 120ms var(--ease),
+      border-color 120ms var(--ease),
+      transform 120ms var(--ease-out);
+    transition-delay: var(--d, 0ms);
+  }
+  .cell[data-on] {
+    background: var(--accent);
+    color: var(--accent-fg);
+    border-color: var(--accent);
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cell,
+    .cell[data-on] {
+      transform: none;
+      transition-delay: 0ms;
+    }
+  }
+
+  .readout {
+    font-variant-numeric: tabular-nums;
+    min-block-size: 3em;
+  }
+  figcaption {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    max-inline-size: var(--measure);
+  }
+</style>
+
+<script>
+  type Cell = HTMLElement
+
+  function init(root: HTMLElement) {
+    if (root.dataset.ready) return
+    root.dataset.ready = ''
+    const buckets: number[] = JSON.parse(root.dataset.users!)
+    const cells = [...root.querySelectorAll<Cell>('[data-cell]')]
+    const slider = root.querySelector<HTMLInputElement>('[data-slider]')!
+    const pctOut = root.querySelector<HTMLElement>('[data-pct]')!
+    const readout = root.querySelector<HTMLElement>('[data-readout]')!
+    const live = root.querySelector<HTMLElement>('[data-live]')!
+    const modes = [...root.querySelectorAll<HTMLInputElement>('input[name="mode"]')]
+
+    const roll = () => buckets.map(() => Math.floor(Math.random() * 100))
+    let rolls = roll()
+    let prev: boolean[] | null = null
+
+    const mode = () => (modes.find((m) => m.checked)?.value ?? 'hash') as 'hash' | 'random'
+
+    function render(opts: { stagger?: boolean; announce?: boolean } = {}) {
+      const pct = Number(slider.value)
+      const m = mode()
+      const values = m === 'hash' ? buckets : rolls
+      const next = values.map((v) => v < pct)
+
+      let joined = 0
+      let left = 0
+      let order = 0
+      cells.forEach((c, i) => {
+        const changed = prev ? next[i] !== prev[i] : false
+        if (prev && changed) next[i] ? joined++ : left++
+        c.style.setProperty('--d', opts.stagger && changed ? `${Math.min(order++, 10) * 30}ms` : '0ms')
+        if (next[i]) c.setAttribute('data-on', '')
+        else c.removeAttribute('data-on')
+        c.firstElementChild!.textContent = m === 'hash' ? String(values[i]) : ''
+      })
+
+      const on = next.filter(Boolean).length
+      pctOut.textContent = `${pct}%`
+      slider.setAttribute('aria-valuetext', `${pct} percent`)
+      const change = prev ? ` Since the last change: ${joined} joined, ${left} left.` : ''
+      const text = `${on} of ${cells.length} users have the feature.${change}`
+      readout.textContent = text
+      if (opts.announce) live.textContent = text
+      prev = next
+    }
+
+    slider.addEventListener('input', () => {
+      if (mode() === 'random') rolls = roll() // every evaluation is a fresh dice roll
+      render()
+    })
+    slider.addEventListener('change', () => render({ announce: true }))
+    root.querySelector('[data-reload]')!.addEventListener('click', () => {
+      if (mode() === 'random') rolls = roll()
+      render({ stagger: true, announce: true })
+    })
+    modes.forEach((m) =>
+      m.addEventListener('change', () => {
+        if (mode() === 'random') rolls = roll()
+        render({ stagger: true, announce: true })
+      }),
+    )
+    render()
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-rollout]').forEach(init)
+  })
+</script>

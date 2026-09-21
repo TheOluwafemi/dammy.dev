@@ -16,7 +16,8 @@ interface Props {
   noindex?: boolean
 }
 
-const { title, description, path = Astro.url.pathname, image, type = 'website', noindex = false } = Astro.props
+const DEFAULT_IMAGE = { src: '/og/home.png', width: 1200, height: 630, alt: 'Damilola Oluwafemi, software engineer' }
+const { title, description, path = Astro.url.pathname, image = DEFAULT_IMAGE, type = 'website', noindex = false } = Astro.props
 // build.format 'file' makes build-time pathnames end in .html; canonicals must not.
 const cleanPath = path.replace(/(?:\/index)?\.html$/, '') || '/'
 const canonical = new URL(cleanPath, Astro.site).href
@@ -95,6 +96,9 @@ const person = {
 
     <script type="application/ld+json" set:html={JSON.stringify(person).replace(/</g, '\\u003c')} />
     <ClientRouter />
+    <script>
+      import '../scripts/reveal'
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

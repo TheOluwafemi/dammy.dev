@@ -1,0 +1,121 @@
+---
+import { render } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+import { getWork, kindLabel, years, type Work } from '../../lib/work'
+import { getPackages, summarise, isFlaghoist, roughly } from '../../lib/npm'
+
+export async function getStaticPaths() {
+  const work = await getWork()
+  return work.filter((w) => w.data.caseStudy).map((entry) => ({ params: { slug: entry.id }, props: { entry } }))
+}
+
+const { entry } = Astro.props as { entry: Work }
+const { Content } = await render(entry)
+const d = entry.data
+
+// Live npm numbers, so the case study never carries a stale figure.
+const metrics = [...d.metrics]
+const npm = d.npm
+if (npm) {
+  const all = await getPackages()
+  const mine = npm === 'flaghoist' ? all.filter(isFlaghoist) : all.filter((p) => npm.includes(p.name))
+  const s = summarise(mine)
+  metrics.push({ label: 'Packages on npm', value: String(s.count) })
+  if (s.downloads !== null) metrics.push({ label: 'Downloads, last month', value: `about ${roughly(s.downloads)}` })
+}
+---
+
+<Base
+  title={`${d.title} — Damilola Oluwafemi`}
+  description={d.summary}
+  path={`/work/${entry.id}`}
+  type="article"
+  image={{ src: `/og/${entry.id}.png`, width: 1200, height: 630, alt: `${d.title}: ${d.summary}` }}
+>
+  <article class="container case">
+    <a class="back link" href="/work">All work</a>
+
+    <header>
+      <p class="eyebrow">{kindLabel(entry)} · {years(entry)}{d.role ? ` · ${d.role}` : ''}</p>
+      <h1 style={`view-transition-name: work-${entry.id}`}>{d.title}</h1>
+      <p class="summary">{d.summary}</p>
+    </header>
+
+    {metrics.length > 0 && (
+      <dl class="metrics">
+        {metrics.map((m) => (
+          <div>
+            <dt>{m.label}</dt>
+            <dd>{m.value}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {d.links.length > 0 && (
+      <ul role="list" class="links">
+        {d.links.map((l, i) => (
+          <li><a class:list={['btn', i === 0 && 'btn-primary']} href={l.href}>{l.label}</a></li>
+        ))}
+      </ul>
+    )}
+  </article>
+</Base>
+
+<style>
+  .case {
+    padding-block: var(--space-8) var(--space-12);
+    max-inline-size: calc(var(--measure) + var(--gutter) * 2);
+    margin-inline: auto;
+    display: grid;
+    /* minmax(0, ...) so wide code or tables scroll inside their box instead of widening the page */
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+  .back {
+    justify-self: start;
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+  }
+  header {
+    display: grid;
+    gap: var(--space-3);
+  }
+  h1 {
+    font-size: var(--text-display);
+    color: var(--accent);
+    justify-self: start;
+  }
+  .summary {
+    font-size: var(--text-lg);
+    line-height: 1.4;
+  }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: var(--space-4) var(--space-6);
+    padding-block: var(--space-6);
+    border-block: 1px solid var(--border);
+  }
+  dt {
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  dd {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

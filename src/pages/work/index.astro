@@ -1,0 +1,105 @@
+---
+import Base from '../../layouts/Base.astro'
+import { getWork, hrefFor, isExternal, kindLabel, years } from '../../lib/work'
+
+const work = await getWork()
+---
+
+<Base
+  title="Work — Damilola Oluwafemi"
+  description="Products, open-source packages and experiments by Damilola Oluwafemi: Flaghoist, dsl-query-builder, and earlier work in fintech and crypto."
+  path="/work"
+>
+  <div class="container page">
+    <h1>Work</h1>
+    <p class="lede">Everything I've built that I can point at, newest first.</p>
+
+    <ul role="list" class="list">
+      {work.map((w) => (
+        <li class="item" data-reveal>
+          <div class="head">
+            <h2>
+              <a
+                class="item-link"
+                href={hrefFor(w)}
+                style={w.data.caseStudy ? `view-transition-name: work-${w.id}` : undefined}
+              >{w.data.title}</a>
+            </h2>
+            <span class="years">{years(w)}</span>
+          </div>
+          <p class="eyebrow">{kindLabel(w)}{w.data.role ? ` · ${w.data.role}` : ''}{w.data.org ? `, ${w.data.org}` : ''}</p>
+          <p class="summary">{w.data.summary}</p>
+          <svg class="arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            {isExternal(w) ? <path d="M4 12 12 4M5.5 4H12v6.5" /> : <path d="M3 8h10M9 4l4 4-4 4" />}
+          </svg>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .page {
+    padding-block: var(--space-12) var(--space-8);
+  }
+  h1 {
+    font-size: var(--text-display);
+    color: var(--accent);
+  }
+  .lede {
+    margin-block: var(--space-4) var(--space-12);
+    color: var(--fg-muted);
+    max-inline-size: var(--measure);
+  }
+  .list {
+    border-block-start: 1px solid var(--border);
+  }
+  .item {
+    position: relative;
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-6) var(--space-8) var(--space-6) 0;
+    border-block-end: 1px solid var(--border);
+  }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-4);
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+  }
+  .item-link {
+    text-decoration: none;
+  }
+  .item-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .years {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .summary {
+    max-inline-size: var(--measure);
+    color: var(--fg-muted);
+  }
+  .arrow {
+    position: absolute;
+    inset-block-end: var(--space-6);
+    inset-inline-end: 0;
+    color: var(--fg-muted);
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .item:hover .arrow {
+      transform: translateX(2px);
+      color: var(--accent);
+    }
+  }
+</style>
