@@ -1,0 +1,98 @@
+---
+import { site } from '../data/site'
+---
+
+<div class="copy-email">
+  <a class="link address" href={`mailto:${site.email}`}>{site.email}</a>
+  <button type="button" class="copy pressable" data-copy={site.email}>
+    <span data-copy-label>Copy</span>
+  </button>
+  <span class="visually-hidden" role="status" data-copy-status></span>
+</div>
+
+<style>
+  .copy-email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+  }
+  .address {
+    font-size: var(--text-lg);
+    overflow-wrap: anywhere;
+  }
+  .copy {
+    display: none;
+    padding: var(--space-1) var(--space-3);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    min-block-size: 2rem;
+    transition:
+      transform var(--dur-press) var(--ease-out),
+      border-color var(--dur-fast) var(--ease);
+  }
+  /* No JS, no copy button: the mailto link still works. */
+  :global(:root[data-js]) .copy {
+    display: inline-block;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .copy:hover {
+      border-color: var(--fg-muted);
+    }
+  }
+  /* Label swap: 2px blur bridges old and new text so it reads as one change. */
+  [data-copy-label] {
+    display: inline-block;
+    transition:
+      filter 120ms var(--ease),
+      opacity 120ms var(--ease);
+  }
+  [data-copy-label][data-swap] {
+    filter: blur(2px);
+    opacity: 0.6;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-copy-label][data-swap] {
+      filter: none;
+    }
+  }
+</style>
+
+<script>
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+  async function swap(label: HTMLElement, text: string) {
+    label.setAttribute('data-swap', '')
+    await wait(120)
+    label.textContent = text
+    label.removeAttribute('data-swap')
+  }
+
+  const timers = new WeakMap<HTMLElement, number>()
+
+  document.addEventListener('click', async (e) => {
+    const btn = (e.target as Element).closest<HTMLButtonElement>('[data-copy]')
+    if (!btn) return
+    const label = btn.querySelector<HTMLElement>('[data-copy-label]')!
+    const status = btn.parentElement?.querySelector<HTMLElement>('[data-copy-status]')
+    let ok = true
+    try {
+      await navigator.clipboard.writeText(btn.dataset.copy!)
+    } catch {
+      ok = false
+    }
+    clearTimeout(timers.get(btn))
+    await swap(label, ok ? 'Copied' : 'Copy failed')
+    if (status) status.textContent = ok ? 'Email address copied' : 'Could not copy the email address'
+    timers.set(
+      btn,
+      window.setTimeout(() => {
+        swap(label, 'Copy')
+        if (status) status.textContent = ''
+      }, 1600),
+    )
+  })
+</script>

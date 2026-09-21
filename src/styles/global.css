@@ -1,0 +1,226 @@
+@import './tokens.css';
+
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  min-block-size: 100dvh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: var(--leading-prose);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-inline-size: 100%;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: var(--leading-display);
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+a {
+  color: inherit;
+}
+:target {
+  scroll-margin-block-start: var(--space-16);
+}
+
+/* Focus: visible for keyboard users, never for pointer clicks */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+::selection {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+ul[role='list'] {
+  padding: 0;
+  list-style: none;
+}
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* One h1 per page; it morphs between routes (View Transitions). */
+main h1 {
+  view-transition-name: page-title;
+}
+
+/* Press feedback: every pressable element */
+.pressable {
+  transition: transform var(--dur-press) var(--ease-out);
+}
+.pressable:active {
+  transform: scale(0.97);
+}
+
+/* Inline link: underline reveals via clip-path (composited), hover gated so touch doesn't stick. */
+.link {
+  position: relative;
+  text-decoration: none;
+  border-block-end: 1px solid var(--border);
+}
+.link::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -1px;
+  block-size: 1px;
+  background: var(--accent);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .link:hover::after {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Button-styled link */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.65rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    transform var(--dur-press) var(--ease-out),
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    border-color: var(--fg-muted);
+  }
+  .btn-primary:hover {
+    background: color-mix(in oklab, var(--accent), var(--fg) 14%);
+    border-color: transparent;
+  }
+}
+
+/* Page sections */
+.section {
+  padding-block: var(--space-12);
+}
+.section > h2 {
+  margin-block-end: var(--space-6);
+  font-size: var(--text-xl);
+  color: var(--accent);
+}
+.eyebrow {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-radius: var(--radius);
+  transform: translateY(-200%);
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
+.container {
+  inline-size: 100%;
+  max-inline-size: var(--wide);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Page transition (Astro ClientRouter). Cross-fade + 8px rise, --dur-page. */
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+::view-transition-old(root) {
+  animation: vt-out var(--dur-page) var(--ease-out) both;
+}
+::view-transition-new(root) {
+  animation: vt-in var(--dur-page) var(--ease-out) both;
+}
+
+/* Reduced motion means gentler, not zero: keep opacity and colour, remove movement. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  ::view-transition-new(root) {
+    animation-name: vt-fade-in;
+  }
+  @keyframes vt-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+}

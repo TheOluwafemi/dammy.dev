@@ -1,0 +1,116 @@
+---
+import '../styles/global.css'
+import { ClientRouter } from 'astro:transitions'
+import SiteHeader from '../components/SiteHeader.astro'
+import SiteFooter from '../components/SiteFooter.astro'
+
+interface Props {
+  title: string
+  description: string
+  /** Absolute path for the canonical URL; defaults to the current path. */
+  path?: string
+  /** Absolute or site-relative OG image. Omitted until per-page OG images land (plan Phase 3). */
+  image?: { src: string; width: number; height: number; alt: string }
+  type?: 'website' | 'article'
+  /** Keep a page out of search results (unfinished stubs). */
+  noindex?: boolean
+}
+
+const { title, description, path = Astro.url.pathname, image, type = 'website', noindex = false } = Astro.props
+// build.format 'file' makes build-time pathnames end in .html; canonicals must not.
+const cleanPath = path.replace(/(?:\/index)?\.html$/, '') || '/'
+const canonical = new URL(cleanPath, Astro.site).href
+const imageUrl = image ? new URL(image.src, Astro.site).href : undefined
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Damilola Oluwafemi',
+  url: 'https://dammy.dev',
+  jobTitle: 'Software engineer',
+  address: { '@type': 'PostalAddress', addressCountry: 'GB' },
+  sameAs: [
+    'https://github.com/TheOluwafemi',
+    'https://www.npmjs.com/~dammyskillz_',
+    'https://github.com/flaghoist',
+    'https://linkedin.com/in/damilola-oluwafemi',
+    'https://twitter.com/dammyskillz_',
+  ],
+}
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#f6f5f2" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="Damilola Oluwafemi" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {imageUrl && image && (
+      <>
+        <meta property="og:image" content={imageUrl} />
+        <meta property="og:image:width" content={String(image.width)} />
+        <meta property="og:image:height" content={String(image.height)} />
+        <meta property="og:image:alt" content={image.alt} />
+      </>
+    )}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+
+    <link rel="preload" href="/fonts/chaviera-regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/neue-montreal-400.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Blocking: sets the theme before first paint so there is no flash. -->
+    <script is:inline>
+      (() => {
+        let t
+        try {
+          t = localStorage.getItem('theme')
+        } catch {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        const root = document.documentElement
+        root.dataset.theme = t
+        root.dataset.js = '' // enables JS-only enhancements (collapsible lists, copy button)
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t === 'dark' ? '#0f0f1b' : '#f6f5f2')
+        // ClientRouter swaps <html> attributes; carry the theme across navigations.
+        document.addEventListener('astro:before-swap', (e) => {
+          e.newDocument.documentElement.dataset.theme = root.dataset.theme
+          e.newDocument.documentElement.dataset.js = ''
+        })
+      })()
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify(person).replace(/</g, '\\u003c')} />
+    <ClientRouter />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <SiteHeader />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>
+
+<style is:global>
+  /* Theme reveal (plan 3.7 #4): JS animates ::view-transition-new(root) itself. */
+  :root[data-vt='theme']::view-transition-old(root),
+  :root[data-vt='theme']::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+</style>

@@ -1,0 +1,107 @@
+/* Design tokens. Every colour, size and motion value in the site derives from here.
+   Contrast (WCAG): body text >= 4.5:1, focus ring >= 3:1, in both themes. */
+
+@font-face {
+  font-family: 'Chaviera';
+  src: url('/fonts/chaviera-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/fonts/neue-montreal-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/fonts/neue-montreal-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+
+  /* Colour: light (default) */
+  --bg: #f6f5f2;
+  --bg-subtle: #ecebe6;
+  --fg: #0f0f1b;
+  --fg-muted: #55556b;
+  --accent: #4031f5;
+  --accent-fg: #ffffff;
+  --border: #d9d8d2;
+  --ring: #4031f5;
+
+  /* Type */
+  --font-display: 'Chaviera', Georgia, 'Times New Roman', serif;
+  --font-body: 'Neue Montreal', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-xs: clamp(0.75rem, 0.73rem + 0.1vw, 0.8125rem);
+  --text-sm: clamp(0.875rem, 0.85rem + 0.12vw, 0.9375rem);
+  --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.375rem);
+  --text-xl: clamp(1.5rem, 1.3rem + 1vw, 2.25rem);
+  --text-display: clamp(2.5rem, 1.6rem + 4.5vw, 5rem);
+
+  --leading-display: 1.1;
+  --leading-prose: 1.6;
+
+  /* Spacing (4px base) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* Layout */
+  --gutter: max(1rem, 4vw);
+  --measure: 68ch;
+  --wide: 1100px;
+  --radius: 0.5rem;
+
+  /* Motion. Easing: built-in CSS curves are too weak to read as intentional. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* enter, exit, anything responding to the user */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen A to B movement */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1); /* hover, colour */
+
+  --dur-press: 140ms;
+  --dur-fast: 180ms;
+  --dur-base: 240ms;
+  --dur-page: 260ms;
+}
+
+/* Dark: explicit choice wins in both directions. The media query only serves
+   visitors with no stored choice and JS disabled (the head script sets data-theme). */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f0f1b;
+  --bg-subtle: #171728;
+  --fg: #fdfdff;
+  --fg-muted: #a4a4bd;
+  --accent: #b8c8ff;
+  --accent-fg: #0f0f1b;
+  --border: #2a2a42;
+  --ring: #b8c8ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0f0f1b;
+    --bg-subtle: #171728;
+    --fg: #fdfdff;
+    --fg-muted: #a4a4bd;
+    --accent: #b8c8ff;
+    --accent-fg: #0f0f1b;
+    --border: #2a2a42;
+    --ring: #b8c8ff;
+  }
+}

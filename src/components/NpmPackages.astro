@@ -1,0 +1,156 @@
+---
+import type { Pkg } from '../lib/npm'
+
+interface Props {
+  packages: Pkg[]
+  /** Rows visible before "Show all". */
+  initial?: number
+}
+const { packages, initial = 6 } = Astro.props
+const first = packages.slice(0, initial)
+const rest = packages.slice(initial)
+const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'))
+---
+
+<div class="pkgs">
+  <ul role="list" class="rows">
+    {first.map((p) => (
+      <li class="row">
+        <a class="name link" href={p.url}>{p.name}</a>
+        <span class="desc">{p.description}</span>
+        <span class="dl" title="Downloads in the last month">{fmt(p.downloads)}</span>
+      </li>
+    ))}
+  </ul>
+
+  {rest.length > 0 && (
+    <>
+      <div class="more" id="pkgs-more" data-more>
+        <div class="more-inner">
+          <ul role="list" class="rows">
+            {rest.map((p) => (
+              <li class="row">
+                <a class="name link" href={p.url}>{p.name}</a>
+                <span class="desc">{p.description}</span>
+                <span class="dl" title="Downloads in the last month">{fmt(p.downloads)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <button type="button" class="toggle pressable" aria-expanded="false" aria-controls="pkgs-more" data-more-toggle data-total={packages.length}>
+        <span data-more-label>Show all {packages.length}</span>
+      </button>
+    </>
+  )}
+</div>
+
+<style>
+  .rows {
+    padding: 0;
+    list-style: none;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-6);
+    padding-block: var(--space-4);
+    border-block-end: 1px solid var(--border);
+  }
+  .name {
+    grid-column: 1;
+    justify-self: start;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    overflow-wrap: anywhere;
+  }
+  .dl {
+    grid-column: 2;
+    grid-row: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+  }
+  .desc {
+    grid-column: 1 / -1;
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+  }
+  @media (min-width: 48rem) {
+    .row {
+      grid-template-columns: minmax(12rem, 20rem) minmax(0, 1fr) 5rem;
+      align-items: baseline;
+    }
+    .name {
+      grid-column: 1;
+    }
+    .desc {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .dl {
+      grid-column: 3;
+      justify-self: end;
+    }
+  }
+
+  /* Collapse only when JS is present (no JS: all rows visible, no button). */
+  .toggle {
+    display: none;
+    margin-block-start: var(--space-6);
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+      transform var(--dur-press) var(--ease-out),
+      border-color var(--dur-fast) var(--ease);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .toggle:hover {
+      border-color: var(--fg-muted);
+    }
+  }
+  :global(:root[data-js]) .toggle {
+    display: inline-block;
+  }
+  .more {
+    display: grid;
+    grid-template-rows: 1fr;
+  }
+  .more-inner {
+    min-block-size: 0;
+    overflow: hidden;
+  }
+  :global(:root[data-js]) .more:not([data-open]) {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      grid-template-rows 160ms var(--ease-in-out),
+      opacity 160ms var(--ease-out),
+      visibility 0s 160ms;
+  }
+  :global(:root[data-js]) .more[data-open] {
+    transition:
+      grid-template-rows var(--dur-base) var(--ease-in-out),
+      opacity var(--dur-base) var(--ease-out);
+  }
+</style>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as Element).closest<HTMLButtonElement>('[data-more-toggle]')
+    if (!btn) return
+    const more = document.getElementById(btn.getAttribute('aria-controls')!)
+    if (!more) return
+    const open = !more.hasAttribute('data-open')
+    if (open) more.setAttribute('data-open', '')
+    else more.removeAttribute('data-open')
+    btn.setAttribute('aria-expanded', String(open))
+    const total = btn.dataset.total
+    const label = btn.querySelector('[data-more-label]')
+    if (label) label.textContent = open ? 'Show fewer' : `Show all ${total ?? ''}`.trim()
+  })
+</script>
