@@ -4,9 +4,11 @@ import CopyEmail from '../components/CopyEmail.astro'
 import NpmPackages from '../components/NpmPackages.astro'
 import { site, now } from '../data/site'
 import { getFeatured, hrefFor, isExternal, kindLabel, years } from '../lib/work'
+import { getPosts } from '../lib/writing'
 import { getPackages, summarise, isFlaghoist, roughly } from '../lib/npm'
 
 const featured = await getFeatured()
+const posts = (await getPosts()).slice(0, 3)
 const packages = await getPackages()
 const all = summarise(packages)
 const flaghoist = summarise(packages.filter(isFlaghoist))
@@ -76,7 +78,21 @@ const openSourceIntro =
       <div data-reveal><NpmPackages packages={packages} /></div>
     </section>
 
-    <!-- Writing block arrives with the writing collection (plan Phase 4). -->
+    {posts.length > 0 && (
+      <section class="section" aria-labelledby="writing-h">
+        <h2 id="writing-h">Writing</h2>
+        <ul role="list" class="work">
+          {posts.map((p) => (
+            <li class="work-item" data-reveal>
+              <h3><a class="work-link" href={`/writing/${p.id}`} style={`view-transition-name: post-${p.id}`}>{p.data.title}</a></h3>
+              <p>{p.data.summary}</p>
+              <svg class="arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
+            </li>
+          ))}
+        </ul>
+        <p class="more-link"><a class="link" href="/writing">All writing</a></p>
+      </section>
+    )}
 
     <section class="section" aria-labelledby="contact-h">
       <h2 id="contact-h">Get in touch</h2>
@@ -169,6 +185,9 @@ const openSourceIntro =
     content: '';
     position: absolute;
     inset: 0;
+  }
+  .more-link {
+    margin-block-start: var(--space-6);
   }
   .stat {
     font-size: var(--text-sm);

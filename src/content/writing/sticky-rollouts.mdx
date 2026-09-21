@@ -1,0 +1,60 @@
+---
+title: Sticky rollouts without storing who is in them
+summary: How Flaghoist decides, deterministically and with no assignment table, whether a user is in a percentage rollout.
+published: 2026-09-21
+tags: [flaghoist, algorithms]
+---
+
+import RolloutExplainer from '../../components/RolloutExplainer.astro'
+
+A percentage rollout has one job that is easy to get wrong: give the same user the same answer every time.
+
+If someone is in a 25% rollout on one page load and out of it on the next, the feature flickers. The usual fix is an assignment table that remembers who was put where. That is state to store, and state to keep consistent across every place the flag gets evaluated. Flaghoist has no such table.
+
+## The whole algorithm
+
+```ts
+export async function stickyBucket(seed: string): Promise<number> {
+  const data = new TextEncoder().encode(seed)
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', data)
+  return new DataView(digest).getUint32(0) % 100
+}
+
+export async function isInRollout(targetingKey: string, flagKey: string, percentage: number) {
+  const pct = clampPercentage(percentage)
+  if (pct >= 100) return true
+  if (pct <= 0) return false
+  const bucket = await stickyBucket(`${targetingKey}:${flagKey}`)
+  return bucket < pct
+}
+```
+
+Hash `"<user>:<flag>"` with SHA-256, take the first four bytes as a number, reduce it modulo 100, and the user is in the rollout when that bucket is below the percentage. Nothing is stored, because the answer is a pure function of two strings.
+
+## What that buys
+
+Three properties follow, and you can check each one below by dragging the slider.
+
+- **Stable.** The same user and the same flag always land in the same bucket, so a user never flips between page loads.
+- **Monotonic.** Raising the rollout from 25% to 40% only adds people. Everyone who had the feature keeps it, because their bucket has not moved and the threshold has only gone up.
+- **Independent per flag.** The flag key is part of the seed, so the users who get in early on one flag are not the same users who get in early on every flag.
+
+<RolloutExplainer />
+
+Switch the demo to "Random on every request" and raise the slider. People lose a feature you only meant to widen. That is what the hash is preventing.
+
+## Details worth knowing
+
+SHA-256 is doing determinism and an even spread here, and nothing more. Its cryptographic strength is incidental. It is also available in every runtime through Web Crypto, and the same seed gives the same bucket everywhere.
+
+The modulo is very slightly uneven in theory: 2<sup>32</sup> is not a multiple of 100, so each of buckets 0 to 95 comes up one more time than each of 96 to 99, out of about 43 million times apiece. Nothing about a feature rollout can notice that.
+
+The edge cases fail conservatively. A percentage of 100 or more is always in, zero or less is always out, and a `NaN` is clamped to zero, so a malformed value keeps the feature hidden.
+
+## The sharp edge
+
+The user part of the seed comes from the evaluation context's `targetingKey`, which is optional. When it is missing, the code uses an empty string.
+
+That means every caller without a key hashes the same seed, `":new-checkout"`, and lands in the same bucket. For those callers a 50% rollout is not half of them. It is all of them or none of them, decided by one number.
+
+That is correct for a function of its inputs, but it is easy to trip over: a rollout only splits users you can tell apart, so pass a stable identifier.

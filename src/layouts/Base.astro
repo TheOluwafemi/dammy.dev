@@ -12,12 +12,14 @@ interface Props {
   /** Absolute or site-relative OG image. Omitted until per-page OG images land (plan Phase 3). */
   image?: { src: string; width: number; height: number; alt: string }
   type?: 'website' | 'article'
-  /** Keep a page out of search results (unfinished stubs). */
+  /** Keep a page out of search results. */
   noindex?: boolean
+  /** Extra structured data for this page (e.g. an Article). */
+  jsonLd?: Record<string, unknown>
 }
 
 const DEFAULT_IMAGE = { src: '/og/home.png', width: 1200, height: 630, alt: 'Damilola Oluwafemi, software engineer' }
-const { title, description, path = Astro.url.pathname, image = DEFAULT_IMAGE, type = 'website', noindex = false } = Astro.props
+const { title, description, path = Astro.url.pathname, image = DEFAULT_IMAGE, type = 'website', noindex = false, jsonLd } = Astro.props
 // build.format 'file' makes build-time pathnames end in .html; canonicals must not.
 const cleanPath = path.replace(/(?:\/index)?\.html$/, '') || '/'
 const canonical = new URL(cleanPath, Astro.site).href
@@ -50,6 +52,7 @@ const person = {
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title="Damilola Oluwafemi: writing" href="/rss.xml" />
     <meta name="theme-color" content="#f6f5f2" />
 
     <meta property="og:type" content={type} />
@@ -95,6 +98,7 @@ const person = {
     </script>
 
     <script type="application/ld+json" set:html={JSON.stringify(person).replace(/</g, '\\u003c')} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
     <ClientRouter />
     <script>
       import '../scripts/reveal'

@@ -1,8 +1,131 @@
 ---
 import Base from '../layouts/Base.astro'
-import Stub from '../components/Stub.astro'
+import { experience, education, years } from '../data/experience'
+import { site } from '../data/site'
 ---
 
-<Base title="About — Damilola Oluwafemi" description="About. Coming soon." noindex>
-  <Stub title="About" phase="Phase 4" />
+<Base
+  title="About — Damilola Oluwafemi"
+  description="Damilola Oluwafemi is a software engineer in the UK. Eight years across banking, fintech and crypto, now building developer tools. His career, how he works, and what he does outside work."
+  path="/about"
+>
+  <div class="container page">
+    <h1>About</h1>
+
+    <div class="prose intro">
+      <p>
+        I'm Damilola Oluwafemi, a software engineer based in the {site.location}. I build developer tools and the products around them.
+      </p>
+      <p>
+        I started on the front end at a bank in Lagos and have spent most of my career on products where money moves: banking, fintech and a crypto exchange. Lately I've been working lower down the stack, on infrastructure that other engineers build on. <a class="link" href="/work/flaghoist">Flaghoist</a> is the current example.
+      </p>
+    </div>
+
+    <section aria-labelledby="how-h" class="block">
+      <h2 id="how-h">How I work</h2>
+      <div class="prose">
+        <p>I like small interfaces I can verify. If a claim matters, I test it against reality before I make it, and I write down where a project loses as plainly as where it wins.</p>
+        <p>I would rather ship something narrow that is correct than something broad that is nearly right, and I try to leave the reasons in the code and the repository, not in my head.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="exp-h" class="block">
+      <h2 id="exp-h">Experience</h2>
+      <ol role="list" class="ladder">
+        {experience.map((r) => (
+          <li data-reveal>
+            <div class="when">{years(r)}</div>
+            <div>
+              <h3>
+                {r.url ? <a class="link" href={r.url}>{r.org}</a> : r.org}
+                <span class="role">{r.role}{r.orgNote ? `, ${r.orgNote}` : ''} · {r.where}</span>
+              </h3>
+              <p>{r.highlight}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="cv"><a class="btn" href="/cv.pdf">Download my CV (PDF)</a></p>
+    </section>
+
+    <section aria-labelledby="edu-h" class="block">
+      <h2 id="edu-h">Education</h2>
+      <p class="edu"><strong>{education.degree}</strong><br />{education.school}, {education.where}</p>
+    </section>
+
+    <section aria-labelledby="life-h" class="block">
+      <h2 id="life-h">Outside work</h2>
+      <div class="prose">
+        <p>My hobbies take up a large chunk of my leisure. I love to travel, play FC25, listen to delightful music, or take evening strolls.</p>
+      </div>
+    </section>
+  </div>
 </Base>
+
+<style>
+  .page {
+    padding-block: var(--space-12) var(--space-8);
+    max-inline-size: calc(var(--wide) - 200px);
+    margin-inline: auto;
+  }
+  h1 {
+    font-size: var(--text-display);
+    color: var(--accent);
+    margin-block-end: var(--space-8);
+  }
+  .intro {
+    font-size: var(--text-lg);
+    line-height: 1.5;
+  }
+  .block {
+    margin-block-start: var(--space-16);
+  }
+  .block > h2 {
+    margin-block-end: var(--space-6);
+    font-size: var(--text-xl);
+    color: var(--accent);
+  }
+  .ladder {
+    border-block-start: 1px solid var(--border);
+    padding: 0;
+    list-style: none;
+  }
+  .ladder li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1) var(--space-8);
+    padding-block: var(--space-6);
+    border-block-end: 1px solid var(--border);
+  }
+  @media (min-width: 48rem) {
+    .ladder li {
+      grid-template-columns: 11rem minmax(0, 1fr);
+    }
+  }
+  .when {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .ladder h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+  }
+  .role {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+  }
+  .ladder p {
+    margin-block-start: var(--space-2);
+    max-inline-size: var(--measure);
+    color: var(--fg-muted);
+  }
+  .cv {
+    margin-block-start: var(--space-8);
+  }
+</style>

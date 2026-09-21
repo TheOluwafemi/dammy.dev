@@ -319,3 +319,31 @@ main h1 {
     transform: none !important;
   }
 }
+
+/* Heading anchors (rehype-autolink-headings): quiet until hovered or focused. */
+.prose h2,
+.prose h3 {
+  position: relative;
+}
+.heading-anchor {
+  margin-inline-start: var(--space-2);
+  color: var(--fg-muted);
+  text-decoration: none;
+  border: 0 !important;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+@media (hover: hover) and (pointer: fine) {
+  .prose h2:hover .heading-anchor,
+  .prose h3:hover .heading-anchor {
+    opacity: 1;
+  }
+}
+@media (hover: none) {
+  .heading-anchor {
+    opacity: 0.5;
+  }
+}

@@ -1,0 +1,90 @@
+---
+import Base from '../../layouts/Base.astro'
+import { getPosts } from '../../lib/writing'
+import { elsewhere } from '../../data/site'
+
+const posts = await getPosts()
+---
+
+<Base
+  title="Writing — Damilola Oluwafemi"
+  description="Build notes from Flaghoist and other projects: protocols, rollouts and release pipelines, plus older articles published elsewhere."
+  path="/writing"
+>
+  <div class="container page">
+    <h1>Writing</h1>
+    <p class="lede">Notes from building things, mostly Flaghoist. No schedule.</p>
+
+    <ul role="list" class="list">
+      {posts.map((p) => (
+        <li class="item" data-reveal>
+          <h2><a class="item-link" href={`/writing/${p.id}`} style={`view-transition-name: post-${p.id}`}>{p.data.title}</a></h2>
+          <p>{p.data.summary}</p>
+        </li>
+      ))}
+    </ul>
+
+    <section class="elsewhere" aria-labelledby="elsewhere-h">
+      <h2 id="elsewhere-h">Published elsewhere</h2>
+      <ul role="list" class="list">
+        {elsewhere.map((e) => (
+          <li class="item" data-reveal>
+            <h3><a class="item-link" href={e.href}>{e.title}</a></h3>
+            <p class="eyebrow">{e.site}</p>
+            <p>{e.summary}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .page {
+    padding-block: var(--space-12) var(--space-8);
+  }
+  h1 {
+    font-size: var(--text-display);
+    color: var(--accent);
+  }
+  .lede {
+    margin-block: var(--space-4) var(--space-12);
+    color: var(--fg-muted);
+    max-inline-size: var(--measure);
+  }
+  .list {
+    border-block-start: 1px solid var(--border);
+  }
+  .item {
+    position: relative;
+    display: grid;
+    gap: var(--space-1);
+    padding-block: var(--space-6);
+    border-block-end: 1px solid var(--border);
+  }
+  .item h2,
+  .item h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+  }
+  .item p:not(.eyebrow) {
+    max-inline-size: var(--measure);
+    color: var(--fg-muted);
+  }
+  .item-link {
+    text-decoration: none;
+  }
+  .item-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .elsewhere {
+    margin-block-start: var(--space-16);
+  }
+  .elsewhere > h2 {
+    margin-block-end: var(--space-6);
+    font-size: var(--text-xl);
+    color: var(--accent);
+  }
+</style>

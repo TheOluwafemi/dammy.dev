@@ -1,8 +1,111 @@
 ---
 import Base from '../layouts/Base.astro'
-import Stub from '../components/Stub.astro'
+
+// Hardware, editor and terminal were read off the machine this site was built on.
+// TODO(you): correct anything that is out of date, and add what only you know
+// (keyboard, monitor, fonts, theme).
+const groups = [
+  {
+    title: 'Hardware',
+    items: [['Laptop', 'MacBook Air, Apple M2, 16 GB']],
+  },
+  {
+    title: 'Editor and terminal',
+    items: [
+      ['Editor', 'Visual Studio Code'],
+      ['Terminal', 'iTerm2, zsh'],
+      ['AI', 'Claude Code'],
+    ],
+  },
+  {
+    title: 'Tooling',
+    items: [
+      ['Runtime', 'Node.js 22, managed with nvm'],
+      ['Packages', 'pnpm, with Turborepo and Changesets for monorepos'],
+      ['Local infra', 'Docker'],
+      ['Browsers', 'Chrome'],
+    ],
+  },
+  {
+    title: 'What I build with',
+    items: [
+      ['Language', 'TypeScript'],
+      ['Front end', 'Vue and Nuxt, Astro for content sites'],
+      ['Server', 'Hono on Cloudflare Workers, with KV for storage'],
+      ['Standards', 'OpenFeature and OFREP'],
+      ['Checks', 'Prettier, publint, Are the Types Wrong, and a conformance suite for every storage adapter'],
+    ],
+  },
+]
 ---
 
-<Base title="Uses — Damilola Oluwafemi" description="Uses. Coming soon." noindex>
-  <Stub title="Uses" phase="Phase 4" />
+<Base
+  title="Uses — Damilola Oluwafemi"
+  description="The hardware, editor, tooling and stack Damilola Oluwafemi uses to build software."
+  path="/uses"
+>
+  <div class="container page">
+    <h1>Uses</h1>
+    <p class="lede">What I work with.</p>
+
+    {groups.map((g) => (
+      <section class="group" data-reveal>
+        <h2>{g.title}</h2>
+        <dl>
+          {g.items.map(([k, v]) => (
+            <div>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    ))}
+  </div>
 </Base>
+
+<style>
+  .page {
+    padding-block: var(--space-12) var(--space-8);
+    max-inline-size: calc(var(--wide) - 200px);
+    margin-inline: auto;
+  }
+  h1 {
+    font-size: var(--text-display);
+    color: var(--accent);
+  }
+  .lede {
+    margin-block: var(--space-4) var(--space-12);
+    color: var(--fg-muted);
+  }
+  .group {
+    margin-block-end: var(--space-12);
+  }
+  .group h2 {
+    margin-block-end: var(--space-4);
+    font-size: var(--text-xl);
+    color: var(--accent);
+  }
+  dl {
+    border-block-start: 1px solid var(--border);
+  }
+  dl > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1) var(--space-8);
+    padding-block: var(--space-3);
+    border-block-end: 1px solid var(--border);
+  }
+  @media (min-width: 40rem) {
+    dl > div {
+      grid-template-columns: 10rem minmax(0, 1fr);
+    }
+  }
+  dt {
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+  }
+  dd {
+    margin: 0;
+  }
+</style>
