@@ -1,8 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro'
+import NpmPackages from '../../components/NpmPackages.astro'
 import { getWork, hrefFor, isExternal, kindLabel, years } from '../../lib/work'
+import { getPackages, roughly, summarise } from '../../lib/npm'
 
 const work = await getWork()
+const packages = await getPackages()
+const all = summarise(packages)
 ---
 
 <Base
@@ -34,6 +38,14 @@ const work = await getWork()
         </li>
       ))}
     </ul>
+
+    <section class="oss" aria-labelledby="oss-title">
+      <h2 id="oss-title">Open source on npm</h2>
+      <p class="lede">
+        {all.downloads === null ? `${all.count} packages.` : `${all.count} packages, about ${roughly(all.downloads)} downloads a month.`} Most of them exist because I needed them for something else first.
+      </p>
+      <NpmPackages packages={packages} />
+    </section>
   </div>
 </Base>
 
@@ -100,5 +112,12 @@ const work = await getWork()
       transform: translateX(2px);
       color: var(--accent);
     }
+  }
+  .oss {
+    margin-block-start: var(--space-16);
+  }
+  .oss h2 {
+    font-size: var(--text-xl);
+    color: var(--accent);
   }
 </style>

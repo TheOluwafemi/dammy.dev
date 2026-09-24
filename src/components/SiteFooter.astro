@@ -1,37 +1,52 @@
 ---
-import { site, socials } from '../data/site'
+import { footerLinks, site } from '../data/site'
 const year = new Date().getFullYear()
 ---
 
 <footer class="site-footer">
-  <div class="container row">
-    <p>&copy; {year} {site.name}</p>
-    <ul role="list" class="socials">
-      {socials.map((s) => <li><a class="link" href={s.href}>{s.label}</a></li>)}
-    </ul>
+  <div class="container">
+    <div class="row">
+      <span>© {year} {site.name} · {site.location}</span>
+      <nav class="links" aria-label="More">
+        {footerLinks.map((l) => <a href={l.href}>{l.label}</a>)}
+      </nav>
+      <span>The sky follows the time where you are.</span>
+    </div>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    margin-block-start: var(--space-24);
-    border-block-start: 1px solid var(--rule);
-    color: var(--ink);
-    font-size: var(--text-sm);
+    padding-block: 36px 40px;
   }
   .row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-4) var(--space-8);
-    padding-block: var(--space-8);
+    gap: 10px 20px;
+    padding-block-start: 14px;
+    border-block-start: 1px solid var(--rule);
+    font: 500 12px / 1.4 var(--font-mono);
+    transition: border-color var(--dur-skin);
   }
-  .socials {
+  .links {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2) var(--space-6);
-    padding: 0;
-    list-style: none;
+    gap: 4px;
+  }
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap);
+    padding-inline: 10px;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    transition: background-color var(--dur-lift);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .links a:hover {
+      background: rgba(127, 127, 127, 0.16);
+    }
   }
 </style>

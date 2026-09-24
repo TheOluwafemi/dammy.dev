@@ -1,0 +1,69 @@
+---
+import SectionHead from '../components/SectionHead.astro'
+import { now } from '../data/site'
+
+const tiles = [...now.tiles, { label: 'Updated', value: now.updated }]
+---
+
+<section id="now" class="now container" data-sky-time="06:40" aria-labelledby="now-title">
+  <div class="inner">
+    <SectionHead time="06:40" phase="Dawn" name="Now" headingId="now-title" />
+    <p class="statement">{now.statement}</p>
+    <ul role="list" class="tiles">
+      {tiles.map((t) => (
+        <li class="tile">
+          <span class="label">{t.label}</span>
+          <span class="value">{t.value}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .now {
+    display: flex;
+    align-items: center;
+    min-block-size: 100vh;
+    padding-block: 14vh;
+  }
+  .inner {
+    inline-size: 100%;
+  }
+  .statement {
+    max-inline-size: 17ch;
+    margin-block-start: clamp(24px, 4vh, 44px);
+    font: var(--t-now);
+    letter-spacing: var(--ls-now);
+    text-shadow: var(--glow);
+    text-wrap: balance;
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 12px;
+    max-inline-size: 900px;
+    margin-block-start: clamp(32px, 6vh, 64px);
+  }
+  .tile {
+    display: grid;
+    gap: 8px;
+    padding: 18px 20px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-tile);
+    background: var(--panel);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition:
+      background-color var(--dur-skin),
+      border-color var(--dur-skin);
+  }
+  .label {
+    font: 500 10.5px / 1.3 var(--font-mono);
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+  .value {
+    font: 700 19px / 1.25 var(--font-body);
+  }
+</style>

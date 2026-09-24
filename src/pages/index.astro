@@ -1,29 +1,12 @@
 ---
 import Base from '../layouts/Base.astro'
 import Hero from '../sections/Hero.astro'
-import CopyEmail from '../components/CopyEmail.astro'
-import NpmPackages from '../components/NpmPackages.astro'
-import { now } from '../data/site'
-import { getFeatured, hrefFor, isExternal, kindLabel, years } from '../lib/work'
-import { getPosts } from '../lib/writing'
-import { getPackages, summarise, isFlaghoist, roughly } from '../lib/npm'
-
-const featured = await getFeatured()
-const posts = (await getPosts()).slice(0, 3)
-const packages = await getPackages()
-const all = summarise(packages)
-const flaghoist = summarise(packages.filter(isFlaghoist))
-
-// Stats are computed from live npm data, never hard-coded. Omitted if npm was unreachable.
-const statsFor = (npm?: string | string[]) =>
-  npm === 'flaghoist' && flaghoist.downloads !== null
-    ? `${flaghoist.count} packages · about ${roughly(flaghoist.downloads)} downloads last month`
-    : undefined
-
-const openSourceIntro =
-  all.downloads !== null
-    ? `${all.count} packages on npm, about ${roughly(all.downloads)} downloads a month. Most of them exist because I needed them for something else first.`
-    : 'Packages on npm. Most of them exist because I needed them for something else first.'
+import Conditions from '../sections/Conditions.astro'
+import Now from '../sections/Now.astro'
+import Work from '../sections/Work.astro'
+import Changelog from '../sections/Changelog.astro'
+import Writing from '../sections/Writing.astro'
+import Contact from '../sections/Contact.astro'
 ---
 
 <Base
@@ -34,119 +17,16 @@ const openSourceIntro =
   <!-- The old site used /#about and /#projects. Fragments never reach the server, so redirect here. -->
   <script is:inline>
     ;(() => {
-      const moved = { '#about': '/about', '#projects': '/work' }
+      const moved = { '#about': '/about', '#projects': '/#work' }
       const to = moved[location.hash]
       if (to) location.replace(to)
     })()
   </script>
   <Hero />
-
-  <div class="container blocks">
-    <section class="section" aria-labelledby="now-h">
-      <h2 id="now-h">Now</h2>
-      <p class="eyebrow">{now.date}</p>
-      <p class="prose">{now.text}</p>
-    </section>
-
-    <section class="section" aria-labelledby="work-h">
-      <h2 id="work-h">Selected work</h2>
-      <ul role="list" class="work">
-        {featured.map((w) => (
-          <li class="work-item">
-            <h3>
-              <a
-                class="work-link"
-                href={hrefFor(w)}
-              >{w.data.title}</a>
-            </h3>
-            <p class="eyebrow">{kindLabel(w)} · {years(w)}</p>
-            <p>{w.data.summary}</p>
-            {statsFor(w.data.npm) && <p class="stat">{statsFor(w.data.npm)}</p>}
-            <svg class="arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              {isExternal(w) ? <path d="M4 12 12 4M5.5 4H12v6.5" /> : <path d="M3 8h10M9 4l4 4-4 4" />}
-            </svg>
-          </li>
-        ))}
-      </ul>
-    </section>
-
-    <section class="section" aria-labelledby="oss-h">
-      <h2 id="oss-h">Open source</h2>
-      <p class="prose intro">{openSourceIntro}</p>
-      <div><NpmPackages packages={packages} /></div>
-    </section>
-
-    {posts.length > 0 && (
-      <section class="section" aria-labelledby="writing-h">
-        <h2 id="writing-h">Writing</h2>
-        <ul role="list" class="work">
-          {posts.map((p) => (
-            <li class="work-item">
-              <h3><a class="work-link" href={`/writing/${p.id}`}>{p.data.title}</a></h3>
-              <p>{p.data.summary}</p>
-              <svg class="arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
-            </li>
-          ))}
-        </ul>
-        <p class="more-link"><a class="link" href="/writing">All writing</a></p>
-      </section>
-    )}
-
-    <section class="section" id="contact" aria-labelledby="contact-h">
-      <h2 id="contact-h">Get in touch</h2>
-      <p class="prose intro">Want to say hello, work together, or build something? I read everything.</p>
-      <CopyEmail />
-    </section>
-  </div>
+  <Conditions />
+  <Now />
+  <Work />
+  <Changelog />
+  <Writing />
+  <Contact />
 </Base>
-
-<style>
-  /* Selected work: whole row is one link (stretched title link), no nested interactives. */
-  .work {
-    display: grid;
-    border-block-start: 1px solid var(--rule);
-  }
-  .work-item {
-    position: relative;
-    display: grid;
-    gap: var(--space-1);
-    padding: var(--space-6) var(--space-8) var(--space-6) 0;
-    border-block-end: 1px solid var(--rule);
-  }
-  .work-item h3 {
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
-  }
-  .work-item p:not(.eyebrow):not(.stat) {
-    max-inline-size: var(--measure);
-    color: var(--ink);
-  }
-  .work-link {
-    text-decoration: none;
-  }
-  .work-link::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-  }
-  .more-link {
-    margin-block-start: var(--space-6);
-  }
-  .stat {
-    font-size: var(--text-sm);
-    color: var(--accent);
-  }
-  .arrow {
-    position: absolute;
-    inset-block-start: var(--space-6);
-    inset-inline-end: 0;
-    color: var(--ink);
-    transition: transform var(--dur-fast) var(--ease-out);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .work-item:hover .arrow {
-      transform: translate(2px, -2px);
-      color: var(--accent);
-    }
-  }
-</style>

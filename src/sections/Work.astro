@@ -1,0 +1,103 @@
+---
+import SectionHead from '../components/SectionHead.astro'
+import { getFeatured, hrefFor, isExternal, kindLabel } from '../lib/work'
+
+const rows = (await getFeatured()).slice(0, 4)
+// Spec style: "OPEN SOURCE · 2026–" for ongoing work, "PRODUCT · 2021–2022" when finished.
+const when = (start: string, end?: string) => {
+  const s = start.slice(0, 4)
+  const e = end?.slice(0, 4)
+  return !end ? `${s}–` : e === s ? s : `${s}–${e}`
+}
+---
+
+<section id="work" class="work container" data-sky-time="12:10" aria-labelledby="work-title">
+  <SectionHead time="12:10" phase="Midday" name="Work" />
+  <h2 id="work-title" class="section-xl">The work</h2>
+
+  <ol role="list" class="board">
+    {rows.map((w, i) => (
+      <li>
+        <a class="row" href={hrefFor(w)} rel={isExternal(w) ? 'external' : undefined}>
+          <span class="index">{String(i + 1).padStart(2, '0')}</span>
+          <span class="name">{w.data.title}</span>
+          <span class="meta">
+            <span class="kind">{kindLabel(w)} · {when(w.data.start, w.data.end)}</span>
+            <span class="summary">{w.data.summary}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ol>
+  <p class="all"><a class="link" href="/work">See all work</a></p>
+</section>
+
+<style>
+  .work {
+    padding-block: 10vh 12vh;
+  }
+  .board {
+    border-block-start: 1.5px solid var(--ink);
+    transition: border-color var(--dur-skin);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 56px) minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 8px 28px;
+    align-items: baseline;
+    margin-inline: -12px;
+    padding: clamp(18px, 3vh, 30px) 12px;
+    border-block-end: 1px solid var(--rule);
+    border-radius: var(--radius-button);
+    text-decoration: none;
+    transition:
+      background-color 0.3s var(--ease),
+      border-color var(--dur-skin);
+  }
+  /* The reference slides the row by animating padding-left, a layout property; transform is the same look without layout work. */
+  .row > * {
+    transition: transform var(--dur-row) var(--ease-row);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .row:hover {
+      background: rgba(127, 127, 127, 0.12);
+    }
+    .row:hover > * {
+      transform: translateX(12px);
+    }
+  }
+  .index {
+    font: 500 12px / 1 var(--font-mono);
+  }
+  .name {
+    font: var(--t-work-row);
+    letter-spacing: var(--ls-work-row);
+    overflow-wrap: anywhere;
+  }
+  .meta {
+    display: grid;
+    gap: 6px;
+    min-inline-size: 0;
+  }
+  .kind {
+    font: 500 11px / 1.3 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .summary {
+    font: 400 15px / 1.5 var(--font-body);
+  }
+  .all {
+    margin-block-start: 28px;
+    font: 600 15px / 1 var(--font-body);
+  }
+  /* Phones: keep the index and name columns, meta wraps under the name (spec §4.12). */
+  @media (max-width: 639px) {
+    .row {
+      grid-template-columns: minmax(0, 36px) minmax(0, 1fr);
+    }
+    .meta {
+      grid-column: 2;
+    }
+  }
+</style>

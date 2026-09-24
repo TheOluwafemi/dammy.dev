@@ -41,7 +41,8 @@
   /* Layout (spec §3.5) */
   --content-max: 1320px;
   --gutter: clamp(16px, 4vw, 56px);
-  --header-h: 65px;
+  /* 12px padding × 2 + 44px nav targets + 1px rule. The spec's 65px assumed 40px items, below its own 44px minimum. */
+  --header-h: 69px;
   --radius-card: 26px;
   --radius-panel: 32px;
   --radius-tile: 18px;

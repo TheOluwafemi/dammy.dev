@@ -1,0 +1,67 @@
+---
+import SectionHead from '../components/SectionHead.astro'
+import { site, socials } from '../data/site'
+---
+
+<section id="contact" class="contact container" data-sky-time="23:00" aria-labelledby="contact-title">
+  <div class="inner">
+    <SectionHead time="23:00" phase="Night" name="Contact" />
+    <h2 id="contact-title" class="title">Say hello</h2>
+    <div class="row">
+      <a class="email" href={`mailto:${site.email}`}>{site.email}</a>
+      <div class="actions">
+        <button type="button" class="btn btn-primary btn-small" data-copy={site.email}>copy email</button>
+        {socials.map((s) => <a class="btn btn-outline btn-small" href={s.href} rel="me">{s.label}</a>)}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    display: flex;
+    align-items: center;
+    min-block-size: 100vh;
+    padding-block: 14vh 8vh;
+  }
+  .inner {
+    inline-size: 100%;
+  }
+  .title {
+    margin-block-start: clamp(24px, 5vh, 48px);
+    font: var(--t-contact);
+    letter-spacing: var(--ls-contact);
+    text-shadow: var(--glow);
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px 40px;
+    margin-block-start: clamp(28px, 6vh, 56px);
+  }
+  .email {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap);
+    font: 500 clamp(18px, 2.6vw, 36px) / 1.2 var(--font-mono);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+    overflow-wrap: anywhere;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .btn-small {
+    min-block-size: 48px;
+    padding-inline: 16px;
+    font: 600 14px / 1 var(--font-body);
+  }
+  .btn-small[data-copy] {
+    font: 600 13px / 1 var(--font-mono);
+  }
+</style>

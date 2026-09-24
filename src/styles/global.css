@@ -12,6 +12,9 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Anchor jumps clear the sticky header; smooth unless reduced motion (see below). */
+  scroll-padding-block-start: var(--header-h);
+  scroll-behavior: smooth;
 }
 body {
   min-block-size: 100dvh;
@@ -51,9 +54,6 @@ p {
 a {
   color: inherit;
 }
-:target {
-  scroll-margin-block-start: var(--space-16);
-}
 
 /* Focus: visible for keyboard users, never for pointer clicks */
 :focus-visible {
@@ -65,7 +65,8 @@ a {
   color: var(--ink-inverse);
 }
 
-ul[role='list'] {
+ul[role='list'],
+ol[role='list'] {
   padding: 0;
   list-style: none;
 }
@@ -140,20 +141,24 @@ ul[role='list'] {
   }
 }
 
-/* Page sections */
-.section {
-  padding-block: var(--space-12);
-}
-.section > h2 {
-  margin-block-end: var(--space-6);
-  font-size: var(--text-xl);
-  color: var(--accent);
-}
 .eyebrow {
   font-size: var(--text-sm);
   color: var(--ink);
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+
+/* The big section headings on home: The work, Changelog, Writing (spec §3.1 --t-section-xl). */
+.section-xl {
+  margin-block: clamp(20px, 4vh, 40px) clamp(24px, 5vh, 56px);
+  font: var(--t-section-xl);
+  letter-spacing: var(--ls-section-xl);
+  text-shadow: var(--glow);
+}
+
+/* Copy buttons need JS (src/scripts/copy.ts); without it, the text they copy is still on the page. */
+:root:not([data-js]) button[data-copy] {
+  display: none;
 }
 
 /* Skip link */

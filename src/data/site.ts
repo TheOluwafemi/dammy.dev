@@ -6,12 +6,31 @@ export const site = {
   location: 'United Kingdom',
 } as const
 
+/** Main nav: sections of the home page (spec §4). `/#…` works from every page. */
 export const nav = [
-  { label: 'Work', href: '/work' },
-  { label: 'Writing', href: '/writing' },
+  { label: 'Work', href: '/#work' },
+  { label: 'Changelog', href: '/#changelog' },
+  { label: 'Writing', href: '/#writing' },
+  { label: 'Contact', href: '/#contact' },
+] as const
+
+/** Pages that are not sections of home; linked from the footer. */
+export const footerLinks = [
   { label: 'About', href: '/about' },
   { label: 'Uses', href: '/uses' },
+  { label: 'CV', href: '/cv.pdf' },
+  { label: 'RSS', href: '/rss.xml' },
 ] as const
+
+/**
+ * The Conditions strip (spec §4.5). Downloads and package counts are filled in from npm at
+ * build time; these are the words around them.
+ * `visibility` is a public statement about availability: keep it true.
+ */
+export const conditions = {
+  building: { value: 'Building', note: 'Flaghoist, pre-alpha' },
+  visibility: { value: 'Clear', note: 'open to talk' },
+} as const
 
 export const socials = [
   { label: 'GitHub', href: 'https://github.com/TheOluwafemi' },
@@ -22,8 +41,13 @@ export const socials = [
 
 /** The "Now" block. Update the date each time you touch the text: it is shown, so staleness is honest. */
 export const now = {
-  date: 'September 2026',
-  text: 'Building Flaghoist. It is pre-alpha, and I am working towards a stable release and a proper docs site. I also maintain a handful of small TypeScript libraries that came out of work I needed done.',
+  updated: 'September 2026',
+  /** The large statement (spec §4.6). */
+  statement: 'Building Flaghoist. Pre-alpha, heading for a stable release and a real docs site.',
+  tiles: [
+    { label: 'In progress', value: 'Stable release' },
+    { label: 'In progress', value: 'Docs site' },
+  ],
 } as const
 
 /** Writing published on other sites. Descriptions are the ones from the old site. */
