@@ -114,6 +114,20 @@ describe('head bootstrap', () => {
     expect(props['--sky-fallback']).toMatch(/^linear-gradient\(160deg,rgb/)
     expect(meta.content).toMatch(/^rgb\(/)
   })
+  it('asks for the preloader only on the first home visit of a session', () => {
+    const run = (mode: 'home' | 'lite', seen: boolean) => {
+      const props: Record<string, string> = {}
+      const root = { dataset: {} as Record<string, string>, style: { setProperty: (k: string, v: string) => (props[k] = v) } }
+      const sessionStorage = { getItem: () => (seen ? '1' : null) }
+      new Function('document', 'sessionStorage', bootScript(mode))({ documentElement: root, querySelector: () => null }, sessionStorage)
+      return { root, props }
+    }
+    const first = run('home', false)
+    expect(first.root.dataset.preloading).toBe('')
+    expect(first.props['--pre-time']).toMatch(/^"\d\d:\d\d"$/)
+    expect(run('home', true).root.dataset.preloading).toBeUndefined()
+    expect(run('lite', false).root.dataset.preloading).toBeUndefined()
+  })
   it('always uses dark ink on lite pages', () => {
     const root = { dataset: {} as Record<string, string>, style: { setProperty: () => {} } }
     new Function('document', bootScript('lite'))({ documentElement: root, querySelector: () => null })

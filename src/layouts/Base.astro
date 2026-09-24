@@ -4,6 +4,7 @@ import { Font } from 'astro:assets'
 import SiteHeader from '../components/SiteHeader.astro'
 import SiteFooter from '../components/SiteFooter.astro'
 import Sky from '../components/Sky.astro'
+import Preloader from '../components/Preloader.astro'
 import { bootScript, type SkyMode } from '../sky/bootstrap'
 
 interface Props {
@@ -91,6 +92,7 @@ const person = {
   </head>
   <body>
     <Sky mode={sky} />
+    {sky === 'home' && <Preloader />}
     <a class="skip-link" href="#main">Skip to content</a>
     <SiteHeader />
     <main id="main">

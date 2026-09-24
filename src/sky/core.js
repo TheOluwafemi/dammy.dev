@@ -74,4 +74,19 @@ export function boot(root, mode, date) {
   root.style.setProperty('--sky-fallback', skyGradient(P))
   const meta = document.querySelector('meta[name="theme-color"]')
   if (meta) meta.setAttribute('content', rgbCss(P[0]))
+  if (mode === 'home') preload(root, rp, P, date)
+}
+
+/** The first visit of a session on home shows the preloader (docs/REDESIGN-PLAN.md D4). */
+export function preload(root, rp, P, date) {
+  try {
+    if (sessionStorage.getItem('sky-seen')) return
+  } catch (e) {
+    return
+  }
+  const two = (n) => String(n).padStart(2, '0')
+  root.dataset.preloading = ''
+  root.style.setProperty('--pre-bg', 'radial-gradient(120% 90% at 50% 100%,' + rgbCss(P[3]) + ' 0%,' + rgbCss(P[2]) + ' 38%,' + rgbCss(P[0]) + ' 100%)')
+  root.style.setProperty('--pre-sun', rp < 2.3 ? '#fff4d6' : '#e8ecff')
+  root.style.setProperty('--pre-time', '"' + two(date.getHours()) + ':' + two(date.getMinutes()) + '"')
 }

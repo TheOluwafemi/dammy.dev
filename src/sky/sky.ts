@@ -10,6 +10,7 @@ import { buildAnchors, dayAt, type Anchor } from './day'
 import { clockToProg, phaseName, progToClock } from './time'
 import { drawCloudText, type TextBox } from './cloudText'
 import { FRAGMENT, UNIFORMS, VERTEX, type Uniform } from './shader'
+import { SKY_CONDENSE, markSkyReady } from './events'
 
 type RGB = number[]
 type Mode = 'home' | 'lite'
@@ -20,11 +21,6 @@ const GRAIN = 0.04
 const mix = (a: number, b: number, t: number) => a + (b - a) * t
 const mixPal = (A: RGB[], B: RGB[], t: number) => A.map((c, i) => c.map((v, j) => mix(v, B[i][j], t)))
 
-/** Fired on document once the first frame (with the cloud text on home) is on screen. */
-export const SKY_READY = 'sky:ready'
-/** Dispatch on document to let the cloud headline condense (the preloader does this on exit). */
-export const SKY_CONDENSE = 'sky:condense'
-
 export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
   const root = document.documentElement
   /** No WebGL: keep the CSS gradient and show the real <h1> instead of the cloud headline. */
@@ -32,10 +28,7 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
     root.dataset.noGl = ''
     ready()
   }
-  const ready = () => {
-    ;(window as unknown as { __skyReady?: boolean }).__skyReady = true
-    document.dispatchEvent(new Event(SKY_READY))
-  }
+  const ready = markSkyReady
 
   // Default alpha: until the first frame the canvas is transparent and the CSS gradient shows.
   const gl = canvas.getContext('webgl', { antialias: false })

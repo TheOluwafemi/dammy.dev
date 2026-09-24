@@ -1,0 +1,155 @@
+---
+// Spec §4.1. Shown only when the head script sets data-preloading (first visit of a session,
+// with JS). Without JS it stays hidden, so nobody sees a stuck overlay.
+---
+
+<div class="preloader" role="status" aria-label="Loading" data-preloader hidden>
+  <div class="stack">
+    <div class="arc" aria-hidden="true">
+      <div class="ring"></div>
+      <div class="arm" data-pre-arm><div class="sun"></div></div>
+    </div>
+    <div class="horizon" aria-hidden="true"></div>
+    <p class="label">Reading the sky where you are</p>
+    <p class="time" aria-hidden="true"></p>
+    <p class="pct" data-pre-pct aria-hidden="true">0%</p>
+  </div>
+</div>
+
+<style>
+  .preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--pre-bg, var(--sky-fallback));
+    color: var(--ink);
+    transition: opacity 0.7s ease;
+  }
+  :global(:root[data-preloading]) .preloader {
+    display: flex;
+  }
+  .preloader[data-leaving] {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .arc {
+    position: relative;
+    inline-size: 200px;
+    block-size: 100px;
+    overflow: hidden;
+  }
+  .ring {
+    position: absolute;
+    inset: 0 auto auto 0;
+    inline-size: 200px;
+    block-size: 200px;
+    border: 1.5px dashed currentColor;
+    border-radius: 50%;
+    opacity: 0.45;
+  }
+  /* A zero-size arm at the arc's centre; rotating it 0 -> 180deg carries the sun across. */
+  .arm {
+    position: absolute;
+    inset-inline-start: 100px;
+    inset-block-start: 100px;
+    inline-size: 0;
+    block-size: 0;
+  }
+  .sun {
+    position: absolute;
+    inset-inline-start: -106px;
+    inset-block-start: -6px;
+    inline-size: 12px;
+    block-size: 12px;
+    border-radius: 50%;
+    background: var(--pre-sun, #fff4d6);
+    box-shadow: 0 0 22px 4px var(--pre-sun, #fff4d6);
+  }
+  .horizon {
+    inline-size: 240px;
+    block-size: 1px;
+    background: currentColor;
+    opacity: 0.4;
+  }
+  .label {
+    margin-block-start: 26px;
+    font: 500 11px / 1.3 var(--font-mono);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  /* The visitor's time, written by the head script before first paint. */
+  .time::after {
+    content: var(--pre-time, '');
+  }
+  .time {
+    margin-block-start: 14px;
+    font: 800 64px / 1 var(--font-display);
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .pct {
+    margin-block-start: 12px;
+    font: 500 12px / 1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+
+<script>
+  import { SKY_CONDENSE, SKY_READY, skyIsReady } from '../sky/events'
+
+  const root = document.documentElement
+  const el = document.querySelector<HTMLElement>('[data-preloader]')
+
+  if (el && root.hasAttribute('data-preloading')) {
+    const arm = el.querySelector<HTMLElement>('[data-pre-arm]')!
+    const pct = el.querySelector<HTMLElement>('[data-pre-pct]')!
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const minTime = reduce ? 300 : 600
+    const hardStop = 4500
+    const t0 = performance.now()
+
+    let fonts = false
+    let sky = skyIsReady()
+    document.fonts ? document.fonts.ready.then(() => (fonts = true)) : (fonts = true)
+    document.addEventListener(SKY_READY, () => (sky = true))
+
+    let p = 0
+    let done = false
+    const finish = () => {
+      if (done) return
+      done = true
+      el.setAttribute('data-leaving', '')
+      document.dispatchEvent(new Event(SKY_CONDENSE))
+      try {
+        sessionStorage.setItem('sky-seen', '1')
+      } catch {}
+      setTimeout(() => root.removeAttribute('data-preloading'), 750)
+    }
+
+    // A timer, not the frame loop: background tabs pause animation frames, and the page must
+    // never stay covered.
+    setTimeout(finish, hardStop)
+
+    const step = () => {
+      if (done) return
+      const elapsed = performance.now() - t0
+      const target = (Number(fonts) + Number(sky) + Math.min(1, elapsed / minTime)) / 3
+      p += (target - p) * (reduce ? 1 : 0.07)
+      arm.style.transform = `rotate(${(p * 180).toFixed(1)}deg)`
+      pct.textContent = `${Math.round(p * 100)}%`
+      if (p > 0.985 && fonts && sky && elapsed >= minTime) return finish()
+      requestAnimationFrame(step)
+    }
+    step()
+  }
+</script>
