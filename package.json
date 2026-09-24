@@ -12,7 +12,8 @@
     "astro": "astro",
     "deploy": "astro build && wrangler deploy",
     "check": "astro check",
-    "cv": "node scripts/cv.mjs"
+    "cv": "node scripts/cv.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.1",
@@ -32,7 +33,9 @@
     "@astrojs/check": "^0.9.10",
     "@fontsource/bricolage-grotesque": "^5.3.0",
     "@fontsource/figtree": "^5.3.0",
+    "esbuild": "^0.28.2",
     "typescript": "^6.0.3",
+    "vitest": "^5.0.1",
     "wrangler": "^4.135.0"
   }
 }

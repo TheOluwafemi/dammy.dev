@@ -59,7 +59,7 @@ if (npm) {
     {d.links.length > 0 && (
       <ul role="list" class="links">
         {d.links.map((l, i) => (
-          <li><a class:list={['btn', i === 0 && 'btn-primary']} href={l.href}>{l.label}</a></li>
+          <li><a class:list={['btn', i === 0 ? 'btn-primary' : 'btn-outline']} href={l.href}>{l.label}</a></li>
         ))}
       </ul>
     )}

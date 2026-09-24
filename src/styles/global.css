@@ -108,36 +108,35 @@ ul[role='list'] {
   }
 }
 
-/* Button-styled link */
+/* Buttons (spec §4.3, §3.6): 52px, ink-filled or ink-outlined. The lift overshoots slightly,
+   so it only runs where there is a real hover. */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 0.65rem 1.1rem;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  font-weight: 500;
+  justify-content: center;
+  min-block-size: var(--tap-primary);
+  padding-inline: 24px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-button);
+  font: var(--t-button);
   text-decoration: none;
+  white-space: nowrap;
   transition:
-    transform var(--dur-press) var(--ease-out),
-    background-color var(--dur-fast) var(--ease),
-    border-color var(--dur-fast) var(--ease);
-}
-.btn:active {
-  transform: scale(0.97);
+    transform var(--dur-lift) var(--ease-lift),
+    background-color var(--dur-skin),
+    color var(--dur-skin),
+    border-color var(--dur-skin);
 }
 .btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--ink);
   color: var(--ink-inverse);
+}
+.btn-outline {
+  border-color: var(--ink);
 }
 @media (hover: hover) and (pointer: fine) {
   .btn:hover {
-    border-color: var(--ink);
-  }
-  .btn-primary:hover {
-    background: color-mix(in oklab, var(--accent), var(--ink) 14%);
-    border-color: transparent;
+    transform: translateY(-2px);
   }
 }
 
@@ -171,6 +170,12 @@ ul[role='list'] {
 }
 .skip-link:focus-visible {
   transform: none;
+}
+
+.site-footer,
+main {
+  position: relative;
+  z-index: 1;
 }
 
 .container {

@@ -1,0 +1,29 @@
+---
+import type { SkyMode } from '../sky/bootstrap'
+
+interface Props {
+  mode: SkyMode
+}
+const { mode } = Astro.props
+---
+
+<!-- Decoration only: the page is complete without it (spec §6). -->
+<canvas class="sky" data-sky={mode} aria-hidden="true"></canvas>
+
+<style>
+  .sky {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    inline-size: 100vw;
+    block-size: 100vh;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  import { startSky } from '../sky/sky'
+  const canvas = document.querySelector<HTMLCanvasElement>('canvas[data-sky]')
+  if (canvas) startSky(canvas, canvas.dataset.sky === 'home' ? 'home' : 'lite')
+</script>

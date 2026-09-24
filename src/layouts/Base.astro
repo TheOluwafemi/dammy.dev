@@ -3,6 +3,8 @@ import '../styles/global.css'
 import { Font } from 'astro:assets'
 import SiteHeader from '../components/SiteHeader.astro'
 import SiteFooter from '../components/SiteFooter.astro'
+import Sky from '../components/Sky.astro'
+import { bootScript, type SkyMode } from '../sky/bootstrap'
 
 interface Props {
   title: string
@@ -16,10 +18,12 @@ interface Props {
   noindex?: boolean
   /** Extra structured data for this page (e.g. an Article). */
   jsonLd?: Record<string, unknown>
+  /** 'home' is the living sky; every other page gets the pale 'lite' sky. */
+  sky?: SkyMode
 }
 
 const DEFAULT_IMAGE = { src: '/og/home.png', width: 1200, height: 630, alt: 'Damilola Oluwafemi, software engineer' }
-const { title, description, path = Astro.url.pathname, image = DEFAULT_IMAGE, type = 'website', noindex = false, jsonLd } = Astro.props
+const { title, description, path = Astro.url.pathname, image = DEFAULT_IMAGE, type = 'website', noindex = false, jsonLd, sky = 'lite' } = Astro.props
 // build.format 'file' makes build-time pathnames end in .html; canonicals must not.
 const cleanPath = path.replace(/(?:\/index)?\.html$/, '') || '/'
 const canonical = new URL(cleanPath, Astro.site).href
@@ -79,15 +83,14 @@ const person = {
     <Font cssVariable="--font-figtree" preload={[{ weight: 400 }]} />
     <Font cssVariable="--font-dm-mono" />
 
-    <!-- Blocking, before first paint. R1 extends this to set the sky and ink from the visitor's clock. -->
-    <script is:inline>
-      document.documentElement.dataset.js = '' // enables JS-only enhancements (collapsible lists, copy button)
-    </script>
+    <!-- Blocking, before first paint: picks the sky and ink from the visitor's clock (src/sky/core.js). -->
+    <script is:inline set:html={bootScript(sky)} />
 
     <script type="application/ld+json" set:html={JSON.stringify(person).replace(/</g, '\\u003c')} />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
   </head>
   <body>
+    <Sky mode={sky} />
     <a class="skip-link" href="#main">Skip to content</a>
     <SiteHeader />
     <main id="main">

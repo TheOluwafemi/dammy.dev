@@ -1,8 +1,9 @@
 ---
 import Base from '../layouts/Base.astro'
+import Hero from '../sections/Hero.astro'
 import CopyEmail from '../components/CopyEmail.astro'
 import NpmPackages from '../components/NpmPackages.astro'
-import { site, now } from '../data/site'
+import { now } from '../data/site'
 import { getFeatured, hrefFor, isExternal, kindLabel, years } from '../lib/work'
 import { getPosts } from '../lib/writing'
 import { getPackages, summarise, isFlaghoist, roughly } from '../lib/npm'
@@ -26,6 +27,7 @@ const openSourceIntro =
 ---
 
 <Base
+  sky="home"
   title="Damilola Oluwafemi — engineer"
   description="Damilola Oluwafemi is a software engineer in the UK building developer tools and the products around them. Creator of Flaghoist, open-source OpenFeature-native feature flags."
 >
@@ -37,18 +39,7 @@ const openSourceIntro =
       if (to) location.replace(to)
     })()
   </script>
-  <div class="hero container">
-    <h1>{site.name}</h1>
-    <p class="statement">I build developer tools and the products around them.</p>
-    <p class="detail">
-      Eight years across banking, fintech and crypto. Right now I'm building Flaghoist: open-source feature flags you host yourself, running on the edge for nothing.
-    </p>
-    <p class="actions">
-      <a class="btn btn-primary" href="/work">Work</a>
-      <a class="btn" href="https://flaghoist.dev">Flaghoist</a>
-    </p>
-    <p class="eyebrow">{site.location}</p>
-  </div>
+  <Hero />
 
   <div class="container blocks">
     <section class="section" aria-labelledby="now-h">
@@ -110,61 +101,6 @@ const openSourceIntro =
 </Base>
 
 <style>
-  .hero {
-    padding-block: var(--space-16) var(--space-12);
-    display: grid;
-    gap: var(--space-6);
-    justify-items: start;
-  }
-  h1 {
-    font-size: var(--text-display);
-    color: var(--accent);
-    letter-spacing: 0.01em;
-  }
-  .statement {
-    font-size: var(--text-xl);
-    font-weight: 500;
-    line-height: 1.25;
-    max-inline-size: 28ch;
-  }
-  .detail,
-  .prose {
-    max-inline-size: var(--measure);
-    color: var(--ink);
-  }
-  .intro {
-    margin-block-end: var(--space-6);
-  }
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-  }
-
-  /* Hero entrance (plan 3.4). Content ships visible: keyframes only define `from`,
-     `backwards` fill applies it during the delay. Never opacity:0 in the markup. */
-  .hero > * {
-    animation: rise var(--dur-base) var(--ease-out) backwards;
-  }
-  .hero > :nth-child(2) {
-    animation-delay: 40ms;
-  }
-  .hero > :nth-child(3) {
-    animation-delay: 80ms;
-  }
-  .hero > :nth-child(4) {
-    animation-delay: 120ms;
-  }
-  .hero > :nth-child(5) {
-    animation-delay: 160ms;
-  }
-  @keyframes rise {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-  }
-
   /* Selected work: whole row is one link (stretched title link), no nested interactives. */
   .work {
     display: grid;
