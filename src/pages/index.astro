@@ -61,12 +61,11 @@ const openSourceIntro =
       <h2 id="work-h">Selected work</h2>
       <ul role="list" class="work">
         {featured.map((w) => (
-          <li class="work-item" data-reveal>
+          <li class="work-item">
             <h3>
               <a
                 class="work-link"
                 href={hrefFor(w)}
-                style={w.data.caseStudy ? `view-transition-name: work-${w.id}` : undefined}
               >{w.data.title}</a>
             </h3>
             <p class="eyebrow">{kindLabel(w)} · {years(w)}</p>
@@ -83,7 +82,7 @@ const openSourceIntro =
     <section class="section" aria-labelledby="oss-h">
       <h2 id="oss-h">Open source</h2>
       <p class="prose intro">{openSourceIntro}</p>
-      <div data-reveal><NpmPackages packages={packages} /></div>
+      <div><NpmPackages packages={packages} /></div>
     </section>
 
     {posts.length > 0 && (
@@ -91,8 +90,8 @@ const openSourceIntro =
         <h2 id="writing-h">Writing</h2>
         <ul role="list" class="work">
           {posts.map((p) => (
-            <li class="work-item" data-reveal>
-              <h3><a class="work-link" href={`/writing/${p.id}`} style={`view-transition-name: post-${p.id}`}>{p.data.title}</a></h3>
+            <li class="work-item">
+              <h3><a class="work-link" href={`/writing/${p.id}`}>{p.data.title}</a></h3>
               <p>{p.data.summary}</p>
               <svg class="arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
             </li>
@@ -131,7 +130,7 @@ const openSourceIntro =
   .detail,
   .prose {
     max-inline-size: var(--measure);
-    color: var(--fg-muted);
+    color: var(--ink);
   }
   .intro {
     margin-block-end: var(--space-6);
@@ -144,7 +143,7 @@ const openSourceIntro =
 
   /* Hero entrance (plan 3.4). Content ships visible: keyframes only define `from`,
      `backwards` fill applies it during the delay. Never opacity:0 in the markup. */
-  :global(:root:not([data-navigated])) .hero > * {
+  .hero > * {
     animation: rise var(--dur-base) var(--ease-out) backwards;
   }
   .hero > :nth-child(2) {
@@ -169,14 +168,14 @@ const openSourceIntro =
   /* Selected work: whole row is one link (stretched title link), no nested interactives. */
   .work {
     display: grid;
-    border-block-start: 1px solid var(--border);
+    border-block-start: 1px solid var(--rule);
   }
   .work-item {
     position: relative;
     display: grid;
     gap: var(--space-1);
     padding: var(--space-6) var(--space-8) var(--space-6) 0;
-    border-block-end: 1px solid var(--border);
+    border-block-end: 1px solid var(--rule);
   }
   .work-item h3 {
     font-family: var(--font-display);
@@ -184,7 +183,7 @@ const openSourceIntro =
   }
   .work-item p:not(.eyebrow):not(.stat) {
     max-inline-size: var(--measure);
-    color: var(--fg-muted);
+    color: var(--ink);
   }
   .work-link {
     text-decoration: none;
@@ -205,7 +204,7 @@ const openSourceIntro =
     position: absolute;
     inset-block-start: var(--space-6);
     inset-inline-end: 0;
-    color: var(--fg-muted);
+    color: var(--ink);
     transition: transform var(--dur-fast) var(--ease-out);
   }
   @media (hover: hover) and (pointer: fine) {

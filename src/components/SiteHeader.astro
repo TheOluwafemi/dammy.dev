@@ -1,239 +1,71 @@
 ---
-import ThemeToggle from './ThemeToggle.astro'
-import { nav, site } from '../data/site'
+import { nav } from '../data/site'
 ---
 
-<!-- Persisted across navigations so the active indicator can slide between routes. -->
-<header class="site-header" transition:persist>
+<!-- Spec §4.2: sticky, logo left, nav right. On narrow screens the nav scrolls sideways; no menu button. -->
+<header class="site-header">
   <div class="container bar">
-    <a class="wordmark" href="/">{site.name}</a>
-
-    <nav class="nav" aria-label="Primary" data-nav>
-      <ul role="list" class="links" data-nav-links>
-        {nav.map((l) => <li><a class="nav-link" href={l.href}>{l.label}</a></li>)}
-      </ul>
-      <span class="indicator" aria-hidden="true" data-nav-indicator></span>
-    </nav>
-
-    <div class="actions">
-      <ThemeToggle />
-      <button type="button" class="menu-button pressable" aria-expanded="false" aria-controls="mobile-menu" data-menu-button>
-        <span data-menu-label>Menu</span>
-      </button>
-    </div>
-
-    <nav class="menu" id="mobile-menu" aria-label="Mobile" data-menu inert>
-      <ul role="list">
-        {nav.map((l) => <li><a class="nav-link" href={l.href}>{l.label}</a></li>)}
-      </ul>
+    <a class="logo" href="/">dammy.dev</a>
+    <nav class="nav" aria-label="Main">
+      {nav.map((l) => <a class="nav-link" href={l.href}>{l.label}</a>)}
     </nav>
   </div>
 </header>
 
 <style>
   .site-header {
-    position: relative;
+    position: sticky;
+    inset-block-start: 0;
     z-index: 10;
-    view-transition-name: site-header;
+    background: var(--panel);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-block-end: 1px solid var(--rule);
+    transition:
+      background-color var(--dur-skin),
+      border-color var(--dur-skin);
   }
   .bar {
     display: flex;
     align-items: center;
-    gap: var(--space-6);
-    padding-block: var(--space-4);
+    gap: 24px;
+    padding-block: 12px;
   }
-  .wordmark {
-    margin-inline-end: auto;
-    font-weight: 500;
-    text-decoration: none;
-  }
-  .actions {
+  .logo {
+    flex: none;
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    min-block-size: 40px;
+    font: var(--t-logo);
+    letter-spacing: var(--ls-logo);
+    text-decoration: none;
   }
-
-  /* Desktop nav */
+  /* One row at every width (fixes reference §3.3): the nav scrolls instead of wrapping. */
   .nav {
-    display: none;
-    position: relative;
-  }
-  .links {
     display: flex;
-    gap: var(--space-6);
-    padding: 0;
-    list-style: none;
+    gap: 4px;
+    min-inline-size: 0;
+    margin-inline-start: auto;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar {
+    display: none;
   }
   .nav-link {
-    display: block;
-    padding-block: var(--space-2);
-    color: var(--fg-muted);
+    display: flex;
+    align-items: center;
+    min-block-size: var(--tap);
+    padding-inline: 12px;
+    border-radius: var(--radius-pill);
+    font: var(--t-nav);
     text-decoration: none;
-    transition: color var(--dur-fast) var(--ease);
-  }
-  .nav-link[aria-current='page'] {
-    color: var(--fg);
+    white-space: nowrap;
+    transition: background-color var(--dur-lift);
   }
   @media (hover: hover) and (pointer: fine) {
     .nav-link:hover {
-      color: var(--fg);
-    }
-  }
-
-  /* Active indicator: transform only, positioned by JS via --x / --w */
-  .indicator {
-    position: absolute;
-    inset-inline-start: 0;
-    inset-block-end: 0;
-    inline-size: 100px;
-    block-size: 2px;
-    background: var(--accent);
-    transform-origin: left;
-    transform: translateX(calc(var(--x, 0) * 1px)) scaleX(calc(var(--w, 0) / 100));
-    opacity: 0;
-    transition: opacity var(--dur-fast) var(--ease);
-  }
-  .indicator[data-visible] {
-    opacity: 1;
-  }
-  .indicator[data-ready] {
-    transition:
-      transform var(--dur-base) var(--ease-in-out),
-      opacity var(--dur-fast) var(--ease);
-  }
-
-  /* Mobile menu: origin-aware, grows from the button. Exit is faster than enter. */
-  .menu-button {
-    padding: var(--space-2) var(--space-4);
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    cursor: pointer;
-    min-block-size: 2.5rem;
-  }
-  .menu {
-    position: absolute;
-    inset-block-start: 100%;
-    inset-inline-end: var(--gutter);
-    min-inline-size: 12rem;
-    padding: var(--space-2);
-    background: var(--bg-subtle);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    transform-origin: top right;
-    opacity: 0;
-    transform: scale(0.97);
-    visibility: hidden;
-    transition:
-      opacity 120ms var(--ease-out),
-      transform 120ms var(--ease-out),
-      visibility 0s 120ms;
-  }
-  .menu[data-open] {
-    opacity: 1;
-    transform: none;
-    visibility: visible;
-    transition:
-      opacity 180ms var(--ease-out),
-      transform 180ms var(--ease-out),
-      visibility 0s;
-  }
-  .menu ul {
-    padding: 0;
-    list-style: none;
-  }
-  .menu .nav-link {
-    padding: var(--space-3) var(--space-4);
-    border-radius: calc(var(--radius) - 2px);
-  }
-
-  /* No JS: the mobile menu cannot open, so show the links inline instead. */
-  :global(:root:not([data-js])) .bar {
-    flex-wrap: wrap;
-  }
-  :global(:root:not([data-js])) .nav {
-    display: block;
-  }
-  :global(:root:not([data-js])) .menu,
-  :global(:root:not([data-js])) .menu-button {
-    display: none;
-  }
-
-  @media (min-width: 40rem) {
-    .nav {
-      display: block;
-    }
-    .menu,
-    .menu-button {
-      display: none;
+      background: rgba(127, 127, 127, 0.16);
     }
   }
 </style>
-
-<script>
-  const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)
-
-  const currentPath = () => location.pathname.replace(/(?:\/index)?\.html$/, '') || '/'
-
-  function updateNav() {
-    const path = currentPath()
-    document.querySelectorAll<HTMLAnchorElement>('.site-header .nav-link').forEach((a) => {
-      const href = a.getAttribute('href') ?? ''
-      const on = path === href || path.startsWith(href + '/')
-      if (on) a.setAttribute('aria-current', 'page')
-      else a.removeAttribute('aria-current')
-    })
-
-    const nav = $('[data-nav]')
-    const ind = $('[data-nav-indicator]')
-    const active = $('[data-nav-links] .nav-link[aria-current]')
-    if (!nav || !ind) return
-    if (!active || getComputedStyle(nav).display === 'none') {
-      ind.removeAttribute('data-visible')
-      return
-    }
-
-    const wasVisible = ind.hasAttribute('data-visible')
-    if (!wasVisible) ind.removeAttribute('data-ready') // appear in place, don't sweep in from the origin
-    const n = nav.getBoundingClientRect()
-    const r = active.getBoundingClientRect()
-    ind.style.setProperty('--x', String(r.left - n.left))
-    ind.style.setProperty('--w', String(r.width))
-    if (!wasVisible) {
-      void ind.offsetWidth
-      ind.setAttribute('data-visible', '')
-      requestAnimationFrame(() => ind.setAttribute('data-ready', ''))
-    }
-  }
-
-  function setMenu(open: boolean) {
-    const menu = $('[data-menu]')
-    const btn = $('[data-menu-button]')
-    if (!menu || !btn) return
-    if (open) menu.setAttribute('data-open', '')
-    else menu.removeAttribute('data-open')
-    menu.inert = !open
-    btn.setAttribute('aria-expanded', String(open))
-    const label = btn.querySelector('[data-menu-label]')
-    if (label) label.textContent = open ? 'Close' : 'Menu'
-  }
-
-  document.addEventListener('click', (e) => {
-    const t = e.target as Element
-    const menu = $('[data-menu]')
-    if (t.closest('[data-menu-button]')) return setMenu(!menu?.hasAttribute('data-open'))
-    if (menu?.hasAttribute('data-open') && (t.closest('[data-menu] a') || !t.closest('[data-menu]'))) setMenu(false)
-  })
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && $('[data-menu]')?.hasAttribute('data-open')) {
-      setMenu(false)
-      $('[data-menu-button]')?.focus()
-    }
-  })
-  document.addEventListener('astro:page-load', () => {
-    setMenu(false)
-    updateNav()
-  })
-  addEventListener('resize', updateNav)
-  document.fonts?.ready.then(updateNav)
-</script>

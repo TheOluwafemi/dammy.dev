@@ -3,12 +3,13 @@ import { resolve } from 'node:path'
 import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js'
 
-// Bundled chunks move, so resolve from the project root (builds run there).
-const font = (f: string) => readFileSync(resolve(process.cwd(), 'src/assets/og', f))
+// Satori cannot read woff2 or variable fonts, so OG cards use fontsource's static woff files
+// (devDependencies). Resolved from the project root, because bundled chunks move.
+const font = (pkg: string, file: string) => readFileSync(resolve(process.cwd(), 'node_modules/@fontsource', pkg, 'files', file))
 const fonts = [
-  { name: 'Chaviera', data: font('chaviera-regular.otf'), weight: 400 as const, style: 'normal' as const },
-  { name: 'Neue Montreal', data: font('neue-montreal-400.otf'), weight: 400 as const, style: 'normal' as const },
-  { name: 'Neue Montreal', data: font('neue-montreal-500.otf'), weight: 500 as const, style: 'normal' as const },
+  { name: 'Bricolage Grotesque', data: font('bricolage-grotesque', 'bricolage-grotesque-latin-800-normal.woff'), weight: 800 as const, style: 'normal' as const },
+  { name: 'Figtree', data: font('figtree', 'figtree-latin-400-normal.woff'), weight: 400 as const, style: 'normal' as const },
+  { name: 'Figtree', data: font('figtree', 'figtree-latin-500-normal.woff'), weight: 500 as const, style: 'normal' as const },
 ]
 
 type Node = { type: string; props: { style?: Record<string, unknown>; children?: Node | string | (Node | string)[] } }
@@ -31,13 +32,13 @@ export async function renderOg({ eyebrow, title, summary }: OgCard): Promise<Buf
       padding: '72px 80px',
       background: '#0f0f1b',
       color: '#fdfdff',
-      fontFamily: 'Neue Montreal',
+      fontFamily: 'Figtree',
     },
     [
       h({ fontSize: 30, fontWeight: 500, color: '#a4a4bd' }, 'dammy.dev'),
       h({ flexDirection: 'column', gap: 20 }, [
         h({ fontSize: 26, color: '#a4a4bd', letterSpacing: 4, textTransform: 'uppercase' }, eyebrow),
-        h({ fontFamily: 'Chaviera', fontSize: title.length > 18 ? 104 : 132, lineHeight: 1.05, color: '#b8c8ff' }, title),
+        h({ fontFamily: 'Bricolage Grotesque', fontWeight: 800, fontSize: title.length > 18 ? 96 : 124, lineHeight: 1, letterSpacing: '-0.04em', color: '#ffb65e' }, title),
         h({ fontSize: 36, lineHeight: 1.35, color: '#fdfdff', maxWidth: 940 }, summary),
       ]),
       h({ fontSize: 28, color: '#a4a4bd' }, 'Damilola Oluwafemi · Software engineer'),

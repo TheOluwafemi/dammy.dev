@@ -49,7 +49,7 @@ const groups = [
     <p class="lede">What I work with.</p>
 
     {groups.map((g) => (
-      <section class="group" data-reveal>
+      <section class="group">
         <h2>{g.title}</h2>
         <dl>
           {g.items.map(([k, v]) => (
@@ -67,7 +67,7 @@ const groups = [
 <style>
   .page {
     padding-block: var(--space-12) var(--space-8);
-    max-inline-size: calc(var(--wide) - 200px);
+    max-inline-size: calc(var(--content-max) - 200px);
     margin-inline: auto;
   }
   h1 {
@@ -76,7 +76,7 @@ const groups = [
   }
   .lede {
     margin-block: var(--space-4) var(--space-12);
-    color: var(--fg-muted);
+    color: var(--ink);
   }
   .group {
     margin-block-end: var(--space-12);
@@ -87,14 +87,14 @@ const groups = [
     color: var(--accent);
   }
   dl {
-    border-block-start: 1px solid var(--border);
+    border-block-start: 1px solid var(--rule);
   }
   dl > div {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-1) var(--space-8);
     padding-block: var(--space-3);
-    border-block-end: 1px solid var(--border);
+    border-block-end: 1px solid var(--rule);
   }
   @media (min-width: 40rem) {
     dl > div {
@@ -102,7 +102,7 @@ const groups = [
     }
   }
   dt {
-    color: var(--fg-muted);
+    color: var(--ink);
     font-size: var(--text-sm);
   }
   dd {

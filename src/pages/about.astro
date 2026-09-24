@@ -33,7 +33,7 @@ import { site } from '../data/site'
       <h2 id="exp-h">Experience</h2>
       <ol role="list" class="ladder">
         {experience.map((r) => (
-          <li data-reveal>
+          <li>
             <div class="when">{years(r)}</div>
             <div>
               <h3>
@@ -65,7 +65,7 @@ import { site } from '../data/site'
 <style>
   .page {
     padding-block: var(--space-12) var(--space-8);
-    max-inline-size: calc(var(--wide) - 200px);
+    max-inline-size: calc(var(--content-max) - 200px);
     margin-inline: auto;
   }
   h1 {
@@ -86,7 +86,7 @@ import { site } from '../data/site'
     color: var(--accent);
   }
   .ladder {
-    border-block-start: 1px solid var(--border);
+    border-block-start: 1px solid var(--rule);
     padding: 0;
     list-style: none;
   }
@@ -95,7 +95,7 @@ import { site } from '../data/site'
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-1) var(--space-8);
     padding-block: var(--space-6);
-    border-block-end: 1px solid var(--border);
+    border-block-end: 1px solid var(--rule);
   }
   @media (min-width: 48rem) {
     .ladder li {
@@ -104,7 +104,7 @@ import { site } from '../data/site'
   }
   .when {
     font-size: var(--text-sm);
-    color: var(--fg-muted);
+    color: var(--ink);
     font-variant-numeric: tabular-nums;
   }
   .ladder h3 {
@@ -118,12 +118,12 @@ import { site } from '../data/site'
   .role {
     font-family: var(--font-body);
     font-size: var(--text-sm);
-    color: var(--fg-muted);
+    color: var(--ink);
   }
   .ladder p {
     margin-block-start: var(--space-2);
     max-inline-size: var(--measure);
-    color: var(--fg-muted);
+    color: var(--ink);
   }
   .cv {
     margin-block-start: var(--space-8);

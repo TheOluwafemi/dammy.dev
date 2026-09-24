@@ -55,7 +55,7 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--space-1) var(--space-6);
     padding-block: var(--space-4);
-    border-block-end: 1px solid var(--border);
+    border-block-end: 1px solid var(--rule);
   }
   .name {
     grid-column: 1;
@@ -70,12 +70,12 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'
     grid-column: 2;
     grid-row: 1;
     font-variant-numeric: tabular-nums;
-    color: var(--fg-muted);
+    color: var(--ink);
     font-size: var(--text-sm);
   }
   .desc {
     grid-column: 1 / -1;
-    color: var(--fg-muted);
+    color: var(--ink);
     font-size: var(--text-sm);
   }
   @media (min-width: 48rem) {
@@ -102,7 +102,7 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'
     margin-block-start: var(--space-6);
     padding: var(--space-2) var(--space-4);
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid var(--rule);
     border-radius: 999px;
     cursor: pointer;
     transition:
@@ -111,7 +111,7 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'
   }
   @media (hover: hover) and (pointer: fine) {
     .toggle:hover {
-      border-color: var(--fg-muted);
+      border-color: var(--ink);
     }
   }
   :global(:root[data-js]) .toggle {

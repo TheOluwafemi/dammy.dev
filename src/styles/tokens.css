@@ -1,57 +1,122 @@
-/* Design tokens. Every colour, size and motion value in the site derives from here.
-   Contrast (WCAG): body text >= 4.5:1, focus ring >= 3:1, in both themes. */
-
-@font-face {
-  font-family: 'Chaviera';
-  src: url('/fonts/chaviera-regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Neue Montreal';
-  src: url('/fonts/neue-montreal-400.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Neue Montreal';
-  src: url('/fonts/neue-montreal-500.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
+/* Design tokens for "A day with Damilola".
+   Source of truth: docs/Personal website redesign/BUILD-SPEC.md §3 (the reference file wins on conflict).
+   Font files are self-hosted by Astro's Fonts API (astro.config.mjs); <Font> in Base.astro
+   defines --font-bricolage, --font-figtree and --font-dm-mono. */
 
 :root {
-  color-scheme: light;
+  /* Families */
+  --font-display: var(--font-bricolage), 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: var(--font-figtree), 'Figtree', system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), 'DM Mono', ui-monospace, monospace;
 
-  /* Colour: light (default) */
-  --bg: #f6f5f2;
-  --bg-subtle: #ecebe6;
-  --fg: #0f0f1b;
-  --fg-muted: #55556b;
-  --accent: #4031f5;
-  --accent-fg: #ffffff;
-  --border: #d9d8d2;
-  --ring: #4031f5;
+  /* Type scale (spec §3.1). Use as `font: var(--t-…)` plus the matching letter-spacing. */
+  --t-hero-sub: 500 clamp(18px, 1.7vw, 24px) / 1.35 var(--font-body);
+  --ls-hero-sub: -0.01em;
+  --t-section-xl: 800 clamp(64px, 12vw, 200px) / 0.86 var(--font-display);
+  --ls-section-xl: -0.055em;
+  --t-contact: 800 clamp(72px, 15vw, 260px) / 0.84 var(--font-display);
+  --ls-contact: -0.06em;
+  --t-now: 600 clamp(36px, 5.6vw, 88px) / 1.02 var(--font-display);
+  --ls-now: -0.035em;
+  --t-work-row: 800 clamp(34px, 5.4vw, 84px) / 0.95 var(--font-display);
+  --ls-work-row: -0.04em;
+  --t-cond-value: 800 clamp(40px, 4.6vw, 68px) / 1 var(--font-display);
+  --ls-cond-value: -0.04em;
+  --t-release-version: 800 clamp(40px, 5.4vw, 84px) / 0.9 var(--font-display);
+  --ls-release-version: -0.045em;
+  --t-writing-lead: 800 clamp(28px, 3.4vw, 50px) / 1.02 var(--font-display);
+  --ls-writing-lead: -0.03em;
+  --t-writing-card: 800 clamp(24px, 2.4vw, 34px) / 1.05 var(--font-display);
+  --ls-writing-card: -0.025em;
+  --t-writing-num-lead: 800 clamp(80px, 11vw, 170px) / 0.8 var(--font-display);
+  --ls-writing-num-lead: -0.06em;
+  --t-body: 400 16px / 1.55 var(--font-body);
+  --t-label: 500 11px / 1.3 var(--font-mono);
+  --ls-label: 0.14em;
+  --t-nav: 600 13.5px / 1 var(--font-body);
+  --t-logo: 800 17px / 1 var(--font-display);
+  --ls-logo: -0.01em;
+  --t-button: 700 15.5px / 1 var(--font-body);
 
-  /* Type */
-  --font-display: 'Chaviera', Georgia, 'Times New Roman', serif;
-  --font-body: 'Neue Montreal', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* Layout (spec §3.5) */
+  --content-max: 1320px;
+  --gutter: clamp(16px, 4vw, 56px);
+  --header-h: 65px;
+  --radius-card: 26px;
+  --radius-panel: 32px;
+  --radius-tile: 18px;
+  --radius-button: 14px;
+  --radius-pill: 99px;
+  --tap: 44px;
+  --tap-primary: 52px;
 
+  /* Motion (spec §3.6). Colour changes driven by the sky are ambient, not responses to
+     input, so --dur-skin is a documented exception to the 300ms UI budget. */
+  --ease-lift: cubic-bezier(0.3, 1.4, 0.4, 1); /* hover lift, pointer devices only */
+  --ease-row: cubic-bezier(0.2, 0.8, 0.2, 1); /* work-row slide */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-press: 140ms;
+  --dur-fast: 180ms;
+  --dur-base: 240ms;
+  --dur-lift: 250ms;
+  --dur-row: 350ms;
+  --dur-skin: 0.8s;
+
+  /* Sky fallback: the no-JS look and what shows before WebGL draws (spec §5.1).
+     The head script replaces it with the visitor's current palette in R1. */
+  --sky-fallback: linear-gradient(160deg, #1d2150, #5b3e9e 60%, #ffb65e);
+
+  /* Ink skin: dark by default (dawn and day). The head script and the sky loop set
+     data-ink on <html>. */
+  --ink: #17131d;
+  --ink-inverse: #fffaf4;
+  --panel: rgba(255, 252, 248, 0.58);
+  --band: rgba(255, 252, 248, 0.34);
+  --rule: rgba(23, 19, 29, 0.16);
+  --accent: #2f5fd0;
+  --glow: 0 1px 28px rgba(255, 252, 248, 0.5);
+}
+
+:root[data-ink='light'] {
+  --ink: #fbf5ff;
+  --ink-inverse: #17131d;
+  --panel: rgba(16, 14, 36, 0.48);
+  --band: rgba(16, 14, 36, 0.28);
+  --rule: rgba(251, 245, 255, 0.22);
+  --accent: #ffb65e;
+  --glow: 0 1px 28px rgba(16, 14, 36, 0.5);
+}
+
+/* Changelog panel: always light, whatever the sky (spec §3.4). */
+:root {
+  --paper: rgba(255, 252, 247, 0.9);
+  --paper-ink: #17131d;
+  --paper-ink-muted: #57505e;
+  --paper-rule: rgba(23, 19, 29, 0.1);
+
+  --tag-planned-bg: #efe3ff;
+  --tag-planned-fg: #5b2ca0;
+  --tag-feat-bg: #d6f5e3;
+  --tag-feat-fg: #15603f;
+  --tag-breaking-bg: #ffdcc7;
+  --tag-breaking-fg: #a8340a;
+  --tag-docs-bg: #dfe4ff;
+  --tag-docs-fg: #2c3cb0;
+  --tag-chore-bg: #fff0b0;
+  --tag-chore-fg: #6e5600;
+}
+
+/* Spacing and text scale still used by the secondary pages (case studies, posts, About,
+   Uses). R4 restyles those pages on the spec's type tokens; prune what is left unused then. */
+:root {
   --text-xs: clamp(0.75rem, 0.73rem + 0.1vw, 0.8125rem);
   --text-sm: clamp(0.875rem, 0.85rem + 0.12vw, 0.9375rem);
-  --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
   --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.375rem);
   --text-xl: clamp(1.5rem, 1.3rem + 1vw, 2.25rem);
   --text-display: clamp(2.5rem, 1.6rem + 4.5vw, 5rem);
 
-  --leading-display: 1.1;
-  --leading-prose: 1.6;
-
-  /* Spacing (4px base) */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -62,46 +127,5 @@
   --space-16: 4rem;
   --space-24: 6rem;
 
-  /* Layout */
-  --gutter: max(1rem, 4vw);
   --measure: 68ch;
-  --wide: 1100px;
-  --radius: 0.5rem;
-
-  /* Motion. Easing: built-in CSS curves are too weak to read as intentional. */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* enter, exit, anything responding to the user */
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen A to B movement */
-  --ease: cubic-bezier(0.4, 0, 0.2, 1); /* hover, colour */
-
-  --dur-press: 140ms;
-  --dur-fast: 180ms;
-  --dur-base: 240ms;
-  --dur-page: 260ms;
-}
-
-/* Dark: explicit choice wins in both directions. The media query only serves
-   visitors with no stored choice and JS disabled (the head script sets data-theme). */
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: #0f0f1b;
-  --bg-subtle: #171728;
-  --fg: #fdfdff;
-  --fg-muted: #a4a4bd;
-  --accent: #b8c8ff;
-  --accent-fg: #0f0f1b;
-  --border: #2a2a42;
-  --ring: #b8c8ff;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --bg: #0f0f1b;
-    --bg-subtle: #171728;
-    --fg: #fdfdff;
-    --fg-muted: #a4a4bd;
-    --accent: #b8c8ff;
-    --accent-fg: #0f0f1b;
-    --border: #2a2a42;
-    --ring: #b8c8ff;
-  }
 }

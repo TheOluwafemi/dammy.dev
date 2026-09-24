@@ -39,7 +39,7 @@ const article = {
         <time datetime={d.published.toISOString()}>{formatDate(d.published)}</time>
         {d.updated && <> · Updated <time datetime={d.updated.toISOString()}>{formatDate(d.updated)}</time></>}
       </p>
-      <h1 style={`view-transition-name: post-${entry.id}`}>{d.title}</h1>
+      <h1>{d.title}</h1>
       <p class="summary">{d.summary}</p>
     </header>
     <div class="prose">
@@ -61,7 +61,7 @@ const article = {
     justify-self: start;
     padding-block: 0.3rem;
     font-size: var(--text-sm);
-    color: var(--fg-muted);
+    color: var(--ink);
   }
   header {
     display: grid;
@@ -74,6 +74,6 @@ const article = {
   .summary {
     font-size: var(--text-lg);
     line-height: 1.4;
-    color: var(--fg-muted);
+    color: var(--ink);
   }
 </style>

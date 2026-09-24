@@ -16,13 +16,12 @@ const work = await getWork()
 
     <ul role="list" class="list">
       {work.map((w) => (
-        <li class="item" data-reveal>
+        <li class="item">
           <div class="head">
             <h2>
               <a
                 class="item-link"
                 href={hrefFor(w)}
-                style={w.data.caseStudy ? `view-transition-name: work-${w.id}` : undefined}
               >{w.data.title}</a>
             </h2>
             <span class="years">{years(w)}</span>
@@ -48,18 +47,18 @@ const work = await getWork()
   }
   .lede {
     margin-block: var(--space-4) var(--space-12);
-    color: var(--fg-muted);
+    color: var(--ink);
     max-inline-size: var(--measure);
   }
   .list {
-    border-block-start: 1px solid var(--border);
+    border-block-start: 1px solid var(--rule);
   }
   .item {
     position: relative;
     display: grid;
     gap: var(--space-1);
     padding: var(--space-6) var(--space-8) var(--space-6) 0;
-    border-block-end: 1px solid var(--border);
+    border-block-end: 1px solid var(--rule);
   }
   .head {
     display: flex;
@@ -82,18 +81,18 @@ const work = await getWork()
   }
   .years {
     font-size: var(--text-sm);
-    color: var(--fg-muted);
+    color: var(--ink);
     font-variant-numeric: tabular-nums;
   }
   .summary {
     max-inline-size: var(--measure);
-    color: var(--fg-muted);
+    color: var(--ink);
   }
   .arrow {
     position: absolute;
     inset-block-end: var(--space-6);
     inset-inline-end: 0;
-    color: var(--fg-muted);
+    color: var(--ink);
     transition: transform var(--dur-fast) var(--ease-out);
   }
   @media (hover: hover) and (pointer: fine) {

@@ -1,7 +1,6 @@
 /**
- * Career history. Source: the CV in the old repo (portfolio-v2/public/doc). It is the only
- * dated record, and it predates this rebuild, so CONFIRM the top entry is still current.
- * Bullets are the CV's own wording.
+ * Career history. Source: the CV in the old repo (portfolio-v2/public/doc); bullets are its own
+ * wording. Upflow (Sep 2022 onwards) is left out on purpose: it is not a current role.
  */
 export interface Role {
   org: string
@@ -18,20 +17,6 @@ export interface Role {
 }
 
 export const experience: Role[] = [
-  {
-    org: 'Upflow',
-    role: 'Frontend engineer',
-    where: 'Remote',
-    start: 'Sep 2022',
-    url: 'https://upflow.io',
-    highlight: 'Owns the marketing site: reusable sections, lead-generation tooling, and content modelled in Storyblok so other teams can edit without a developer.',
-    bullets: [
-      'Collaborating with the design and marketing teams to improve the website, and add new reusable website sections and pages.',
-      'Interfacing directly with the internal marketing team and other stakeholders to implement lead-generation tools and strategies.',
-      'Managing tracking and lead generation tools: Chili Piper, HubSpot, Segment.',
-      'Managing and delegating the content management process using Storyblok. This helps halve the development cycle and allows other team members to change and improve the website content.',
-    ],
-  },
   {
     org: 'Yellowcard Financials',
     role: 'Frontend engineer',

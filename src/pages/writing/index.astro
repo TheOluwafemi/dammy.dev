@@ -17,8 +17,8 @@ const posts = await getPosts()
 
     <ul role="list" class="list">
       {posts.map((p) => (
-        <li class="item" data-reveal>
-          <h2><a class="item-link" href={`/writing/${p.id}`} style={`view-transition-name: post-${p.id}`}>{p.data.title}</a></h2>
+        <li class="item">
+          <h2><a class="item-link" href={`/writing/${p.id}`}>{p.data.title}</a></h2>
           <p>{p.data.summary}</p>
         </li>
       ))}
@@ -28,7 +28,7 @@ const posts = await getPosts()
       <h2 id="elsewhere-h">Published elsewhere</h2>
       <ul role="list" class="list">
         {elsewhere.map((e) => (
-          <li class="item" data-reveal>
+          <li class="item">
             <h3><a class="item-link" href={e.href}>{e.title}</a></h3>
             <p class="eyebrow">{e.site}</p>
             <p>{e.summary}</p>
@@ -49,18 +49,18 @@ const posts = await getPosts()
   }
   .lede {
     margin-block: var(--space-4) var(--space-12);
-    color: var(--fg-muted);
+    color: var(--ink);
     max-inline-size: var(--measure);
   }
   .list {
-    border-block-start: 1px solid var(--border);
+    border-block-start: 1px solid var(--rule);
   }
   .item {
     position: relative;
     display: grid;
     gap: var(--space-1);
     padding-block: var(--space-6);
-    border-block-end: 1px solid var(--border);
+    border-block-end: 1px solid var(--rule);
   }
   .item h2,
   .item h3 {
@@ -69,7 +69,7 @@ const posts = await getPosts()
   }
   .item p:not(.eyebrow) {
     max-inline-size: var(--measure);
-    color: var(--fg-muted);
+    color: var(--ink);
   }
   .item-link {
     text-decoration: none;

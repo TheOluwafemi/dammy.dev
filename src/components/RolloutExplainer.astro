@@ -45,9 +45,9 @@ const users = Array.from({ length: 40 }, (_, i) => {
   .rollout {
     margin-block: var(--space-8);
     padding: var(--space-6);
-    background: var(--bg-subtle);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-button);
     display: grid;
     gap: var(--space-6);
   }
@@ -64,7 +64,7 @@ const users = Array.from({ length: 40 }, (_, i) => {
   .modes legend {
     margin-block-end: var(--space-2);
     font-size: var(--text-sm);
-    color: var(--fg-muted);
+    color: var(--ink);
   }
   .modes label {
     display: flex;
@@ -73,7 +73,7 @@ const users = Array.from({ length: 40 }, (_, i) => {
     cursor: pointer;
   }
   .modes small {
-    color: var(--fg-muted);
+    color: var(--ink);
   }
   .slider {
     display: grid;
@@ -92,13 +92,13 @@ const users = Array.from({ length: 40 }, (_, i) => {
     justify-self: start;
     padding: var(--space-2) var(--space-4);
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid var(--rule);
     border-radius: 999px;
     cursor: pointer;
   }
   @media (hover: hover) and (pointer: fine) {
     .reload:hover {
-      border-color: var(--fg-muted);
+      border-color: var(--ink);
     }
   }
 
@@ -111,9 +111,9 @@ const users = Array.from({ length: 40 }, (_, i) => {
     aspect-ratio: 1;
     display: grid;
     place-items: center;
-    background: var(--bg);
-    color: var(--fg-muted);
-    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--ink);
+    border: 1px solid var(--rule);
     border-radius: 6px;
     font-family: var(--font-mono);
     font-size: 0.7rem;
@@ -128,7 +128,7 @@ const users = Array.from({ length: 40 }, (_, i) => {
   }
   .cell[data-on] {
     background: var(--accent);
-    color: var(--accent-fg);
+    color: var(--ink-inverse);
     border-color: var(--accent);
     transform: none;
   }
@@ -146,7 +146,7 @@ const users = Array.from({ length: 40 }, (_, i) => {
   }
   figcaption {
     font-size: var(--text-sm);
-    color: var(--fg-muted);
+    color: var(--ink);
     max-inline-size: var(--measure);
   }
 </style>
@@ -217,7 +217,5 @@ const users = Array.from({ length: 40 }, (_, i) => {
     render()
   }
 
-  document.addEventListener('astro:page-load', () => {
-    document.querySelectorAll<HTMLElement>('[data-rollout]').forEach(init)
-  })
+  document.querySelectorAll<HTMLElement>('[data-rollout]').forEach(init)
 </script>

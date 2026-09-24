@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css'
-import { ClientRouter } from 'astro:transitions'
+import { Font } from 'astro:assets'
 import SiteHeader from '../components/SiteHeader.astro'
 import SiteFooter from '../components/SiteFooter.astro'
 
@@ -43,7 +43,7 @@ const person = {
 ---
 
 <!doctype html>
-<html lang="en-GB">
+<html lang="en-GB" data-ink="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -53,7 +53,7 @@ const person = {
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title="Damilola Oluwafemi: writing" href="/rss.xml" />
-    <meta name="theme-color" content="#f6f5f2" />
+    <meta name="theme-color" content="#1d2150" />
 
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="Damilola Oluwafemi" />
@@ -74,37 +74,18 @@ const person = {
     <meta name="twitter:description" content={description} />
     {imageUrl && <meta name="twitter:image" content={imageUrl} />}
 
-    <link rel="preload" href="/fonts/chaviera-regular.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/neue-montreal-400.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Bricolage 800 draws the hero cloud and every heading; Figtree 400 is the body. -->
+    <Font cssVariable="--font-bricolage" preload />
+    <Font cssVariable="--font-figtree" preload={[{ weight: 400 }]} />
+    <Font cssVariable="--font-dm-mono" />
 
-    <!-- Blocking: sets the theme before first paint so there is no flash. -->
+    <!-- Blocking, before first paint. R1 extends this to set the sky and ink from the visitor's clock. -->
     <script is:inline>
-      (() => {
-        let t
-        try {
-          t = localStorage.getItem('theme')
-        } catch {}
-        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-        const root = document.documentElement
-        root.dataset.theme = t
-        root.dataset.js = '' // enables JS-only enhancements (collapsible lists, copy button)
-        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t === 'dark' ? '#0f0f1b' : '#f6f5f2')
-        // ClientRouter swaps <html> attributes; carry the theme across navigations.
-        document.addEventListener('astro:before-swap', (e) => {
-          e.newDocument.documentElement.dataset.theme = root.dataset.theme
-          e.newDocument.documentElement.dataset.js = ''
-          // Any swap means a client-side navigation: the page transition is the entrance, so skip the hero stagger.
-          e.newDocument.documentElement.dataset.navigated = ''
-        })
-      })()
+      document.documentElement.dataset.js = '' // enables JS-only enhancements (collapsible lists, copy button)
     </script>
 
     <script type="application/ld+json" set:html={JSON.stringify(person).replace(/</g, '\\u003c')} />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
-    <ClientRouter />
-    <script>
-      import '../scripts/reveal'
-    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -116,11 +97,3 @@ const person = {
   </body>
 </html>
 
-<style is:global>
-  /* Theme reveal (plan 3.7 #4): JS animates ::view-transition-new(root) itself. */
-  :root[data-vt='theme']::view-transition-old(root),
-  :root[data-vt='theme']::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
-  }
-</style>
