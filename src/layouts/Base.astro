@@ -16,7 +16,6 @@ interface Props {
   image?: { src: string; width: number; height: number; alt: string }
   type?: 'website' | 'article'
   /** Keep a page out of search results. */
-  noindex?: boolean
   /** Extra structured data for this page (e.g. an Article). */
   jsonLd?: Record<string, unknown>
   /** 'home' is the living sky; every other page gets the pale 'lite' sky. */
@@ -24,7 +23,7 @@ interface Props {
 }
 
 const DEFAULT_IMAGE = { src: '/og/home.png', width: 1200, height: 630, alt: 'Damilola Oluwafemi, software engineer' }
-const { title, description, path = Astro.url.pathname, image = DEFAULT_IMAGE, type = 'website', noindex = false, jsonLd, sky = 'lite' } = Astro.props
+const { title, description, path = Astro.url.pathname, image = DEFAULT_IMAGE, type = 'website', jsonLd, sky = 'lite' } = Astro.props
 // build.format 'file' makes build-time pathnames end in .html; canonicals must not.
 const cleanPath = path.replace(/(?:\/index)?\.html$/, '') || '/'
 const canonical = new URL(cleanPath, Astro.site).href
@@ -53,7 +52,6 @@ const person = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title="Damilola Oluwafemi: writing" href="/rss.xml" />
     <meta name="theme-color" content="#1d2150" />

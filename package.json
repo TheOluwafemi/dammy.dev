@@ -12,7 +12,6 @@
     "astro": "astro",
     "deploy": "astro build && wrangler deploy",
     "check": "astro check",
-    "cv": "node scripts/cv.mjs",
     "test": "vitest run"
   },
   "dependencies": {

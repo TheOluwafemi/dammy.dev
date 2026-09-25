@@ -1,7 +1,7 @@
 /**
  * "All notable changes to Damilola Oluwafemi" (spec §4.8).
  * The major version is years in the industry since 2018, so 2018–2020 ship as 0.x.
- * Facts come from the CV (src/data/experience.ts) and the work collection; keep them true.
+ * Facts come from the career history and the work collection; keep them true.
  */
 export type Tag = 'planned' | 'feat' | 'breaking' | 'docs' | 'chore'
 export interface Release {

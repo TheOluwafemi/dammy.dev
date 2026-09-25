@@ -8,7 +8,6 @@ The home page is one scrolling day: Now at dawn, Work at midday, a Changelog of 
 
 - [Flaghoist](https://dammy.dev/work/flaghoist): case study of an OFREP-native feature-flag service, with 14 npm packages, verified against seven languages
 - [dsl-query-builder](https://dammy.dev/work/dsl-query-builder): zero-dependency TypeScript query builder for OpenSearch and Elasticsearch DSL
-- [Yellowcard](https://dammy.dev/work/yellowcard): frontend engineering on a cryptocurrency exchange across 10 new African markets
 - [All work](https://dammy.dev/work)
 
 ## Writing
@@ -18,8 +17,6 @@ The home page is one scrolling day: Now at dawn, Work at midday, a Changelog of 
 - [Running a 14-package release train with Changesets](https://dammy.dev/writing/running-a-release-train-with-changesets)
 - [All writing](https://dammy.dev/writing) and [RSS](https://dammy.dev/rss.xml)
 
-## About
+## Elsewhere
 
-- [About and career](https://dammy.dev/about)
-- [CV (PDF)](https://dammy.dev/cv.pdf)
 - [GitHub](https://github.com/TheOluwafemi), [Flaghoist on GitHub](https://github.com/flaghoist/flaghoist), [npm](https://www.npmjs.com/~dammyskillz_)

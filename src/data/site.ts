@@ -35,9 +35,6 @@ export const socials = [
   { label: 'npm', href: 'https://www.npmjs.com/~dammyskillz_' },
 ] as const
 
-/** On the CV only. */
-export const linkedin = 'https://www.linkedin.com/in/damilola-oluwafemi'
-
 /** The "Now" block. Update the date each time you touch the text: it is shown, so staleness is honest. */
 export const now = {
   updated: 'September 2026',

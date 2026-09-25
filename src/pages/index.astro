@@ -14,10 +14,10 @@ import Contact from '../sections/Contact.astro'
   title="Damilola Oluwafemi · Software engineer"
   description="Damilola Oluwafemi is a software engineer in the UK building developer tools and the products around them. Creator of Flaghoist, open-source OpenFeature-native feature flags."
 >
-  <!-- The old site used /#about and /#projects. Fragments never reach the server, so redirect here. -->
+  <!-- The old site used /#projects. Fragments never reach the server, so redirect here. -->
   <script is:inline>
     ;(() => {
-      const moved = { '#about': '/about', '#projects': '/#work' }
+      const moved = { '#projects': '/#work' }
       const to = moved[location.hash]
       if (to) location.replace(to)
     })()

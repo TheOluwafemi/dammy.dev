@@ -68,7 +68,6 @@ export default defineConfig({
   },
   integrations: [
     mdx(),
-    // /cv is the print source for cv.pdf, not a page to index.
-    sitemap({ filter: (page) => !/\/cv$/.test(page) }),
+    sitemap(),
   ],
 })
