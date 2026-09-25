@@ -16,9 +16,6 @@ export const nav = [
 
 /** Pages that are not sections of home; linked from the footer. */
 export const footerLinks = [
-  { label: 'About', href: '/about' },
-  { label: 'Uses', href: '/uses' },
-  { label: 'CV', href: '/cv.pdf' },
   { label: 'RSS', href: '/rss.xml' },
 ] as const
 

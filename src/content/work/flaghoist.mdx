@@ -1,6 +1,6 @@
 ---
 title: Flaghoist
-summary: OpenFeature-native feature flags you host yourself. It runs on Cloudflare's free tier, with a dashboard, a CLI and an MCP server.
+summary: OpenFeature-native feature flags you host yourself. It runs on your infrastructure, with a dashboard, a CLI and an MCP server.
 kind: open-source
 role: Creator and sole maintainer
 start: '2026-07'
@@ -37,9 +37,7 @@ So the design goals were narrow. Nothing running when nobody is asking. Storage 
 
 ### Speak OFREP instead of shipping SDKs
 
-The server implements the read path of the OpenFeature Remote Evaluation Protocol (OFREP). Any OpenFeature SDK with an OFREP provider can talk to it without a Flaghoist-specific package, so I did not write a client for every language.
-
-That is a claim about a protocol, and protocols are where "should work" and "does work" come apart. So I tested it: a throwaway deployment and six checks per language, covering initialisation, a disabled flag, a targeting rule, an unknown key and a wrong API key. Seven languages pass against a live server: JavaScript, Go, Python, Ruby, Java, Rust and .NET. PHP is not on the list. No OFREP provider exists for it, so I took it off the site rather than promise something people could not use.
+The server implements the read path of the OpenFeature Remote Evaluation Protocol (OFREP). Any OpenFeature SDK with an OFREP provider can talk to it without a Flaghoist-specific package. Seven languages supported from the start: JavaScript (TypeScript), Go, Python, Ruby, Java, Rust and .NET.
 
 Go failed once, and it was the interesting one. For a disabled flag the server sent `value: false, reason: DISABLED`. The JavaScript provider honoured the value. The Go provider read `DISABLED` as "this flag is not participating, use your own default". A service written as `BooleanValue(ctx, "feature", true)` kept serving a feature that had been switched off while the dashboard showed it off. That is the kill-switch case, where being wrong costs the most.
 
