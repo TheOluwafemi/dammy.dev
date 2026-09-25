@@ -6,6 +6,10 @@
 //   peach-gold while rising in the east), with a soft, wide halo in the same tint (three falloffs:
 //   a close glow, a mid bloom and a faint wash). Replaces the spec's palette-driven `warm`.
 //   Moon: cool silver with a pale blue halo, grey maria, fine grain and slightly darker limbs.
+//   Stars: at most one per cell of a 38-rows-high grid in screen space, placed at a random point
+//   in its cell and kept 4.5% of the time, so they are sparse, scattered and the same density at
+//   any render scale. `hs` is a sin-free hash: the sin hash `h` bands into lines at pixel-sized
+//   inputs on many GPUs. `h` stays for the clouds so they look the same.
 
 export const VERTEX = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}'
 
@@ -13,6 +17,7 @@ export const FRAGMENT = `precision highp float;
 uniform vec2 r,m;uniform float t,mp,stars,sc,txtOn,g,veil,sa;uniform vec3 c0,c1,c2,c3,sun,vc;uniform sampler2D tx;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+1.),f.x),f.y);}
+float hs(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
 float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*n(p);p=p*2.03+17.;a*=.5;}return v;}
 void main(){vec2 uv=gl_FragCoord.xy/r;vec2 asp=vec2(r.x/r.y,1.);
 vec2 dm=(uv-m)*asp;float d=length(dm);
@@ -23,8 +28,10 @@ float f=fbm(p+2.*w);
 vec3 col=mix(c0,c1,smoothstep(.25,.75,f));
 col=mix(col,c2,smoothstep(.35,.95,length(w)*.85));
 col=mix(col,c3,smoothstep(.6,.98,q.y)*.4);
-vec2 gp=floor(gl_FragCoord.xy/3.);float st=step(.9974,h(gp))*(.55+.45*sin(t*2.+h(gp+3.)*40.));
-col+=st*stars*.9;
+vec2 sg=uv*asp*38.;vec2 sc0=floor(sg);float sr=hs(sc0);
+float sdd=length(fract(sg)-(vec2(hs(sc0+17.3),hs(sc0+41.7))*.8+.1))*r.y/38.;
+float st=step(.955,sr)*smoothstep(1.4,.4,sdd)*(.4+.6*hs(sc0+7.1))*(.6+.4*sin(t*1.6+sr*90.));
+col+=st*stars*.95;
 col=mix(col,vc,veil);
 vec2 sd=(uv-sun.xy)*asp;float sl=length(sd);
 float lo=smoothstep(0.,.5,clamp(sun.y/.55,0.,1.));
