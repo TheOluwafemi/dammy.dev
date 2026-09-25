@@ -79,10 +79,11 @@ const person = {
     <meta name="twitter:description" content={description} />
     {imageUrl && <meta name="twitter:image" content={imageUrl} />}
 
-    <!-- Bricolage 800 draws the hero cloud and every heading; Figtree 400 is the body. -->
+    <!-- Preload what the first screen paints: Bricolage (cloud and headings), Figtree 400 and 500
+         (body, hero line), DM Mono 500 (labels). Figtree 600/700 and DM Mono 400 load on demand. -->
     <Font cssVariable="--font-bricolage" preload />
-    <Font cssVariable="--font-figtree" preload={[{ weight: 400 }]} />
-    <Font cssVariable="--font-dm-mono" />
+    <Font cssVariable="--font-figtree" preload={[{ weight: 400 }, { weight: 500 }]} />
+    <Font cssVariable="--font-dm-mono" preload={[{ weight: 500 }]} />
 
     <!-- Blocking, before first paint: picks the sky and ink from the visitor's clock (src/sky/core.js). -->
     <script is:inline set:html={bootScript(sky)} />

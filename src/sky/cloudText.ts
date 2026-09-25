@@ -1,12 +1,8 @@
 // Draws the hero headline into an offscreen canvas that the shader samples as cloud density
 // (spec §5.4). White text on black, softened with a blur so the edges read as vapour.
 
-export interface TextBox {
-  /** Left edge of the content column, in CSS px from the viewport's left. */
-  left: number
-  /** Bottom of the last line, in CSS px from the top of the page (the text scrolls with it). */
-  bottom: number
-}
+// The size and baseline formulas below are mirrored in CSS to position the hero block under
+// the cloud (src/sections/Hero.astro). Change both together.
 
 /** Matches the page container: max-width 1320px, gutter clamp(16px, 4vw, 56px). */
 export function contentBox(cssW: number): { left: number; width: number } {
@@ -15,7 +11,7 @@ export function contentBox(cssW: number): { left: number; width: number } {
   return { left: (cssW - inner) / 2 + gutter, width: inner - gutter * 2 }
 }
 
-export function drawCloudText(target: HTMLCanvasElement, W: number, H: number, dpr: number, family: string): TextBox {
+export function drawCloudText(target: HTMLCanvasElement, W: number, H: number, dpr: number, family: string): void {
   const cssW = W / dpr
   const narrow = cssW < 640
   const lines = narrow ? ['I build', 'developer', 'tools'] : ['I build', 'developer tools']
@@ -43,6 +39,4 @@ export function drawCloudText(target: HTMLCanvasElement, W: number, H: number, d
   ctx.shadowColor = '#fff'
   ctx.shadowBlur = size * 0.2
   lines.forEach((line, i) => ctx.fillText(line, x, H * y + i * size * 0.94))
-
-  return { left: box.left, bottom: (H * y + (lines.length - 1) * size * 0.94 + size * 0.26) / dpr }
 }

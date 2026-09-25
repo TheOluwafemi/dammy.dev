@@ -57,8 +57,10 @@ a {
 
 /* Focus: visible for keyboard users, never for pointer clicks */
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+  /* Two tones, so the ring shows on any sky: ink outline, inverse halo outside it. */
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--ink-inverse);
 }
 ::selection {
   background: var(--accent);
