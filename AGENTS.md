@@ -36,5 +36,6 @@ Personal site for dammy.dev: "A day with Damilola". Astro, static output, served
   - Content ships visible: no `opacity: 0` in markup.
   - Emil Kowalski's skills are in `.claude/skills`; run `review-animations` before shipping.
 - **The sky** (`src/sky/`) is shared maths in `core.js` (also inlined into `<head>` by `bootstrap.ts`), with Vitest tests in `sky.test.ts` (`npm test`). The tests guard the contrast of every sky colour against the ink shown over it. `?at=HH:MM` previews the sky at any time of day.
+- **Git workflow:** every piece of work goes on its own branch off `main`, and is merged back into `main` when it's done. Never commit straight to `main`.
 - **No bloat:** delete what a change makes unused (tokens, components, dependencies, assets) in the same change.
 - **Deploy:** `npm run deploy` (needs `wrangler login`). Cutover steps are in `docs/CUTOVER.md`.

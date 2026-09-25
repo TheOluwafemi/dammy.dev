@@ -223,7 +223,6 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
     const moon = body.moon
     const sunX = body.x
     const sunY = body.y
-    const warm = clamp01((sp - 1.5) / 0.6) * (1 - moon)
     const veil = home ? veilAt(sp) : [0, 0, 0, 0]
 
     m[0] += (mt[0] - m[0]) * 0.08
@@ -241,7 +240,6 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
     gl!.uniform1f(U.sc, s / vh)
     gl!.uniform1f(U.txtOn, textFade * condense)
     gl!.uniform1f(U.g, GRAIN)
-    gl!.uniform1f(U.warm, warm)
     gl!.uniform1f(U.veil, veil[3])
     gl!.uniform3f(U.vc, veil[0], veil[1], veil[2])
     gl!.uniform3fv(U.c0, cols[0])
