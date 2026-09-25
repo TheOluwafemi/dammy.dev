@@ -2,6 +2,8 @@
 
 > Software engineer in the UK building developer tools and the products around them. Eight years across banking, fintech and crypto. Creator and sole maintainer of Flaghoist, open-source OpenFeature-native feature flags that run on Cloudflare Workers.
 
+The home page is one scrolling day: Now at dawn, Work at midday, a Changelog of the career in the afternoon, Writing at dusk and Contact at night.
+
 ## Work
 
 - [Flaghoist](https://dammy.dev/work/flaghoist): case study of an OFREP-native feature-flag service, with 14 npm packages, verified against seven languages
