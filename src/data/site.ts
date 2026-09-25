@@ -2,7 +2,7 @@ export const site = {
   name: 'Damilola Oluwafemi',
   url: 'https://dammy.dev',
   // Public address already on the live site. Change it here and it updates everywhere.
-  email: 'oluwafemidamilola21@gmail.com',
+  email: 'hello@dammy.dev',
   location: 'United Kingdom',
 } as const
 
