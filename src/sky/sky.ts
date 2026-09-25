@@ -1,6 +1,6 @@
 // The living sky: one fixed WebGL canvas behind the page (spec §5).
 // Home: animated, follows the visitor's clock, walks through the day as you scroll, and carries
-// the cloud headline. Lite (every other page): a pale morning sky, drawn only when needed.
+// the cloud headline. Lite (every other page): the visitor's sky at their hour, drawn only when needed.
 //
 // The loop only reads scroll and pointer values and writes a few things: uniforms and
 // `data-ink`. Colours change through CSS, keyed off data-ink, and the hero block is
@@ -11,7 +11,7 @@
 // screen resolution (the clouds are soft), drops to ~30fps when nothing is moving, and lowers
 // its resolution and then stops animating if frames stay slow.
 
-import { clamp01, inkAt, litePal, palAt, realProg, skyClock, veilAt } from './core.js'
+import { clamp01, inkAt, palAt, realProg, skyClock, veilAt } from './core.js'
 import { buildAnchors, dayAt, type Anchor } from './day'
 import { clockToProg, hourToProg, progToHour } from './time'
 import { SUNRISE, bodyAt, heroSky } from './celestial'
@@ -207,20 +207,20 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
       cols = mixPal(palAt(rp), palAt(day), tH)
       sp = mix(rp, day, tH)
     } else {
-      cols = litePal()
-      sp = 0.7
+      sp = realNow()
+      cols = palAt(sp)
     }
 
     // Sun and moon follow the clock: the visitor's hour on the hero, the scroll hour once
-    // past it, walked between in time as the hero scrolls away. Lite pages sit mid-morning.
+    // past it, walked between in time as the hero scrolls away. Lite pages show the visitor's hour.
     // Across the hero: walk forward from now when the scroll day starts from now; otherwise fade
     // the disk out where it is and back in at the scroll day's position, so it never rewinds.
-    const { hour, alpha: sunAlpha } = home ? heroSky(realHour, progToHour(day), tH, walkFromNow) : { hour: 10, alpha: 1 }
+    const { hour, alpha: sunAlpha } = home ? heroSky(realHour, progToHour(day), tH, walkFromNow) : { hour: realHour, alpha: 1 }
     const body = bodyAt(hour)
     const moon = body.moon
     const sunX = body.x
     const sunY = body.y
-    const veil = home ? veilAt(sp) : [0, 0, 0, 0]
+    const veil = veilAt(sp)
 
     m[0] += (mt[0] - m[0]) * 0.08
     m[1] += (mt[1] - m[1]) * 0.08
@@ -233,7 +233,7 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
     gl!.uniform2f(U.m, m[0], m[1])
     gl!.uniform1f(U.t, t)
     gl!.uniform1f(U.mp, mp)
-    gl!.uniform1f(U.stars, home ? clamp01((sp - 2.2) / 0.8) : 0)
+    gl!.uniform1f(U.stars, clamp01((sp - 2.2) / 0.8))
     gl!.uniform1f(U.sc, s / vh)
     gl!.uniform1f(U.txtOn, textFade * condense)
     gl!.uniform1f(U.g, GRAIN)
@@ -254,10 +254,8 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
       ready()
     }
 
-    if (home) {
-      const ink = inkAt(sp)
-      if (ink !== lastInk) root.dataset.ink = lastInk = ink
-    }
+    const ink = inkAt(sp)
+    if (ink !== lastInk) root.dataset.ink = lastInk = ink
   }
 
   // --- Scheduling -------------------------------------------------------------------------

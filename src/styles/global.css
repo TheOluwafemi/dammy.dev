@@ -234,7 +234,7 @@ main {
   padding: clamp(22px, 4vw, 56px);
   border: 1px solid var(--paper-rule);
   border-radius: var(--radius-panel);
-  background: var(--paper);
+  background: var(--sheet);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 30px 90px rgba(20, 20, 60, 0.14);

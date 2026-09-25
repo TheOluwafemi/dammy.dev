@@ -30,9 +30,6 @@ export const VEIL_DARK = [[2.55, 0.26], [2.7, 0.25], [2.8, 0.23], [2.9, 0.21], [
 export const VEIL_LIGHT_RGB = [1, 0.988, 0.973] // #fffcf8
 export const VEIL_DARK_RGB = [0.063, 0.055, 0.141] // #100e24
 
-/** Secondary pages sit under a pale morning sky: palette at 0.85, lightened 50%. */
-export const LITE_PROG = 0.85
-
 export function clamp01(v) {
   return v < 0 ? 0 : v > 1 ? 1 : v
 }
@@ -64,10 +61,6 @@ export function palAt(p) {
   const a = PAL_HEX[i].map(hexRgb)
   const b = PAL_HEX[i + 1].map(hexRgb)
   return a.map((col, k) => col.map((v, j) => v + (b[k][j] - v) * f))
-}
-
-export function litePal() {
-  return palAt(LITE_PROG).map((c) => c.map((v) => v + (1 - v) * 0.5))
 }
 
 export function inkAt(sp) {
@@ -119,12 +112,11 @@ export function skyClock(search) {
 
 /** Runs in <head> before first paint. `mode` is 'home' or 'lite'. */
 export function boot(root, mode, date) {
-  const lite = mode === 'lite'
   const rp = realProg(date.getHours() + date.getMinutes() / 60)
-  const P = lite ? litePal() : palAt(rp)
-  const v = lite ? [0, 0, 0, 0] : veilAt(rp)
+  const P = palAt(rp)
+  const v = veilAt(rp)
   root.dataset.js = ''
-  root.dataset.ink = lite ? 'dark' : inkAt(rp)
+  root.dataset.ink = inkAt(rp)
   root.style.setProperty('--sky-fallback', skyGradient(P, v))
   const meta = document.querySelector('meta[name="theme-color"]')
   if (meta) meta.setAttribute('content', rgbCss(P[0]))

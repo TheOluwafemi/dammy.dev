@@ -102,6 +102,8 @@
    behind it. The alpha and the muted ink are paired: sky.test.ts checks 4.5:1 over every sky. */
 :root {
   --paper: rgba(255, 252, 247, 0.6);
+  /* Reading sheets (articles, case studies) stay near-opaque: long text over a night sky needs it. */
+  --sheet: rgba(255, 252, 247, 0.92);
   --paper-ink: #17131d;
   --paper-ink-muted: #3d3744;
   --paper-rule: rgba(23, 19, 29, 0.1);

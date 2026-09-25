@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { gzipSync } from 'node:zlib'
-import { INK_FLIP, PAL_HEX, hexRgb, inkAt, litePal, palAt, realProg, skyClock, skyGradient, veilAt } from './core.js'
+import { INK_FLIP, PAL_HEX, hexRgb, inkAt, palAt, realProg, skyClock, skyGradient, veilAt } from './core.js'
 import { buildAnchors, dayAt } from './day'
 import { clockToProg, heroPhase, hourToProg, progToHour } from './time'
 import { bootScript } from './bootstrap'
@@ -46,9 +46,6 @@ describe('palette (spec §3.2)', () => {
     mid.forEach((v, j) => expect(v).toBeCloseTo((a[j] + b[j]) / 2, 6))
     expect(palAt(-1)).toEqual(palAt(0))
     expect(palAt(9)).toEqual(palAt(3)) // clamped to the same input
-  })
-  it('lightens the lite sky towards white', () => {
-    litePal().forEach((c, i) => c.forEach((v, j) => expect(v).toBeGreaterThanOrEqual(palAt(0.85)[i][j])))
   })
   it('keeps the static no-JS fallback in tokens.css in sync with the code', () => {
     const css = readFileSync(new URL('../styles/tokens.css', import.meta.url), 'utf8')
@@ -187,10 +184,14 @@ describe('head bootstrap', () => {
     new Function('document', 'sessionStorage', 'location', bootScript('home'))({ documentElement: root, querySelector: () => null }, seen, { search: '?preload' })
     expect(root.dataset.preloading).toBe('')
   })
-  it('always uses dark ink on lite pages', () => {
-    const root = { dataset: {} as Record<string, string>, style: { setProperty: () => {} } }
-    new Function('document', 'location', bootScript('lite'))({ documentElement: root, querySelector: () => null }, { search: '' })
-    expect(root.dataset.ink).toBe('dark')
+  it('gives lite pages the ink for the hour, like home', () => {
+    const ink = (search: string) => {
+      const root = { dataset: {} as Record<string, string>, style: { setProperty: () => {} } }
+      new Function('document', 'location', bootScript('lite'))({ documentElement: root, querySelector: () => null }, { search })
+      return root.dataset.ink
+    }
+    expect(ink('?at=12:00')).toBe('dark')
+    expect(ink('?at=23:30')).toBe('light')
   })
 })
 
