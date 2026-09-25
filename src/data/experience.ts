@@ -1,6 +1,6 @@
 /**
- * Career history. Source: the CV in the old repo (portfolio-v2/public/doc); bullets are its own
- * wording. Upflow (Sep 2022 onwards) is left out on purpose: it is not a current role.
+ * Career history. Source: the CV in the old repo (portfolio-v2/public/doc), with the bullets
+ * edited for length. Upflow (Sep 2022 onwards) is left out on purpose: it is not a current role.
  */
 export interface Role {
   org: string
@@ -24,13 +24,13 @@ export const experience: Role[] = [
     start: 'Apr 2021',
     end: 'Aug 2022',
     url: 'https://yellowcard.io',
-    highlight: 'Supported the launch in 10 new African markets, led the website revamp after a brand refresh, and added multi-language support.',
+    highlight: 'Helped launch in 10 new African markets, led the website revamp after a brand refresh and added multi-language support.',
     bullets: [
-      'Supported the process of launching in 10 new markets (countries) in Africa, by updating transactions and KYC methods.',
-      "Coordinated and managed the revamp of the company's website, following a brand refresh.",
-      'Maintained and added new features to the Yellowcard web application to improve customer experience.',
-      'Integrated multi-language support in the marketing website and web applications to improve engagement and acquisition in non-English speaking countries.',
-      'Iterated on marketing website performance to increase SERP rankings and conversions. Improved the Lighthouse audit by 33% by following accessibility and performance best practice.',
+      'Updated transaction and KYC flows for the launch in 10 new African markets.',
+      'Led the revamp of the company website after a brand refresh.',
+      'Maintained the Yellowcard web app and shipped new features for customers.',
+      'Added multi-language support to the marketing site and web apps, to reach customers in non-English-speaking countries.',
+      "Raised the marketing site's Lighthouse score by 33% through accessibility and performance work, to improve search ranking and conversion.",
     ],
   },
   {
@@ -43,10 +43,10 @@ export const experience: Role[] = [
     url: 'https://gomoney.global',
     highlight: 'Raised website conversion by 45% and built the admin system that cut dispute resolution time by 70%.',
     bullets: [
-      'Collaborated with the design and marketing teams to improve the website, increasing conversion rates from the website by 45% and improving page visibility.',
-      'Maintained and added features to the admin management system for the flagship product, improving customer management and dispute resolution by 70%.',
-      'Created modular, reusable Vue components with the front-end logic to deliver the best user experience.',
-      'Integrated and consumed back-end REST APIs designed for system operations.',
+      'Worked with design and marketing to improve the website, raising its conversion rate by 45% and its visibility in search.',
+      'Maintained and extended the admin system for the flagship product, cutting dispute resolution time by 70%.',
+      'Built modular, reusable Vue components.',
+      'Integrated the back-end REST APIs.',
     ],
   },
   {
@@ -56,12 +56,12 @@ export const experience: Role[] = [
     start: 'Aug 2018',
     end: 'Nov 2019',
     url: 'https://fidelitybank.ng',
-    highlight: 'Unit lead for front-end and UI/UX. Digitised visitor and staff attendance, cutting sign-in time by 50% and going fully paperless.',
+    highlight: 'Led the front-end and UI/UX unit. Digitised visitor and staff attendance, cutting sign-in time by 50% and going fully paperless.',
     bullets: [
-      'Unit lead for the front-end and UI/UX unit.',
-      'Created modular Angular components with the front-end logic to deliver the best user experience.',
-      'Fully digitised the visitor and staff attendance management system, which led to a 50% reduction in visitor sign-in and sign-out time and a 100% paperless system.',
-      'Implemented an in-house API management system for designing, publishing, documenting, analysing and monitoring APIs in a secure environment.',
+      'Led the front-end and UI/UX unit.',
+      'Built modular Angular components.',
+      'Digitised the visitor and staff attendance system, halving sign-in and sign-out time and making it fully paperless.',
+      'Built an in-house system for designing, publishing, documenting, analysing and monitoring APIs.',
     ],
   },
 ]
@@ -72,4 +72,4 @@ export const education = {
   where: 'Akure, Nigeria',
 } as const
 
-export const years = (r: Role) => `${r.start} – ${r.end ?? 'present'}`
+export const years = (r: Role) => `${r.start}–${r.end ?? 'present'}`

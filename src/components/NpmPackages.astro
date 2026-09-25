@@ -9,7 +9,8 @@ interface Props {
 const { packages, initial = 6 } = Astro.props
 const first = packages.slice(0, initial)
 const rest = packages.slice(initial)
-const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'))
+// Blank if npm was unreachable at build time.
+const fmt = (n: number | null) => (n === null ? '' : n.toLocaleString('en-GB'))
 ---
 
 <div class="pkgs">

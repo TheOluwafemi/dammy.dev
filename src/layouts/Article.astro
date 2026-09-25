@@ -17,7 +17,7 @@ interface Props {
 const { title, summary, eyebrow, back, path, image, jsonLd, metrics = [], links = [] } = Astro.props
 ---
 
-<Base title={`${title} — Damilola Oluwafemi`} description={summary} path={path} type="article" image={image} jsonLd={jsonLd}>
+<Base title={`${title} · Damilola Oluwafemi`} description={summary} path={path} type="article" image={image} jsonLd={jsonLd}>
   <article class="container page article">
     <div class="head-row">
       <a class="back" href={back.href}>

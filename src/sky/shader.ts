@@ -3,8 +3,8 @@
 //   `veil` / `vc`: a contrast veil laid over the sky before the sun, moon and cloud text.
 //   `sa`: the sun or moon's opacity.
 //   Sun: tint follows its height (warm orange-gold when low, cream-white when high; a softer
-//   peach-gold while rising in the east), with a soft halo in the same tint. Replaces the spec's
-//   palette-driven `warm`.
+//   peach-gold while rising in the east), with a soft, wide halo in the same tint (three falloffs:
+//   a close glow, a mid bloom and a faint wash). Replaces the spec's palette-driven `warm`.
 //   Moon: cool silver with a pale blue halo, grey maria, fine grain and slightly darker limbs.
 
 export const VERTEX = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}'
@@ -31,7 +31,7 @@ float lo=smoothstep(0.,.5,clamp(sun.y/.55,0.,1.));
 float rise=smoothstep(.45,.6,sun.x)*(1.-sun.z);
 vec3 dc=mix(mix(mix(vec3(1.,.72,.42),vec3(1.,.86,.7),rise),vec3(1.,.97,.9),lo),vec3(.88,.91,1.),sun.z);
 vec3 gc=mix(mix(mix(vec3(1.,.55,.25),vec3(1.,.74,.55),rise),vec3(1.,.88,.62),lo),vec3(.72,.8,1.),sun.z);
-col=mix(col,gc,clamp(.35*exp(-sl*10.)+.12*exp(-sl*3.5),0.,1.)*mix(1.,.6,sun.z)*sa);
+col=mix(col,gc,clamp(mix(.42*exp(-sl*9.)+.2*exp(-sl*4.)+.07*exp(-sl*1.6),.6*(.35*exp(-sl*10.)+.12*exp(-sl*3.5)),sun.z),0.,1.)*sa);
 col=mix(col,dc*(.94+.06*smoothstep(.061,0.,sl)),smoothstep(.061,.057,sl)*sa);
 if(sun.z>.5&&sl<.061){vec2 mq=sd/.061;float z=sqrt(max(0.,1.-dot(mq,mq)));
 float tex=mix(.76,1.,smoothstep(.38,.62,fbm(mq*2.6+11.)))*(.82+.18*z)*(.96+.08*n(mq*14.+3.));

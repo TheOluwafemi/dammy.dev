@@ -17,8 +17,7 @@ export const releases: Release[] = [
     version: 'Unreleased',
     date: 'in progress',
     items: [
-      ['planned', 'Flaghoist stable release.'],
-      ['planned', 'A proper docs site for Flaghoist.'],
+      ['planned', 'Flaghoist 1.0.'],
     ],
   },
   {
@@ -26,8 +25,9 @@ export const releases: Release[] = [
     date: '2026',
     items: [
       ['feat', 'Flaghoist: OpenFeature-native feature flags you host yourself, with a dashboard, CLI and MCP server on Cloudflare’s free tier.'],
-      ['feat', 'Fourteen packages on one release train with changesets.'],
-      ['docs', 'Wrote about sticky rollouts, OFREP, and release pipelines that look fine while doing nothing.'],
+      ['feat', '14 packages on one release train with Changesets.'],
+      ['feat', 'Launched the Flaghoist docs and a live demo.'],
+      ['docs', 'Wrote about sticky rollouts, OFREP and silent failures in release pipelines.'],
     ],
   },
   {
@@ -41,16 +41,16 @@ export const releases: Release[] = [
   },
   {
     version: '3.0.0',
-    date: '2021 – 2022',
+    date: '2021–2022',
     items: [
       ['breaking', 'Moved into crypto as a frontend engineer at Yellowcard.'],
-      ['feat', 'Shipped through the expansion into 10 new African markets.'],
+      ['feat', 'Helped launch in 10 new African markets.'],
       ['feat', 'Added multi-language support to the web app and the marketing site.'],
     ],
   },
   {
     version: '0.x',
-    date: '2018 – 2020',
+    date: '2018–2020',
     items: [
       ['feat', 'Fidelity Bank: led the front-end and UI/UX unit, and digitised visitor sign-in, cutting sign-in time by 50%.'],
       ['feat', 'Sterling Bank (Gomoney): lifted website conversion by 45% and built admin tooling that cut dispute resolution time by 70%.'],
@@ -58,6 +58,4 @@ export const releases: Release[] = [
   },
 ]
 
-/** npm dist-tag for a version: "Unreleased" installs as `next`. */
-export const distTag = (v: string) => (v === 'Unreleased' ? 'next' : v)
 export const releaseId = (v: string) => 'rel-' + v.replace(/[^a-z0-9]/gi, '-').toLowerCase()

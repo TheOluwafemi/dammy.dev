@@ -2,8 +2,8 @@
 // Home: animated, follows the visitor's clock, walks through the day as you scroll, and carries
 // the cloud headline. Lite (every other page): a pale morning sky, drawn only when needed.
 //
-// The loop only reads scroll and pointer values and writes a few things: uniforms, `data-ink`
-// and the clock text. Colours change through CSS, keyed off data-ink, and the hero block is
+// The loop only reads scroll and pointer values and writes a few things: uniforms and
+// `data-ink`. Colours change through CSS, keyed off data-ink, and the hero block is
 // positioned in CSS from the same formulas the cloud text uses (see Hero.astro).
 //
 // Cost control (docs/REDESIGN-PLAN.md §6.4): the sky starts only after the page has loaded and
@@ -13,7 +13,7 @@
 
 import { clamp01, inkAt, litePal, palAt, realProg, skyClock, veilAt } from './core.js'
 import { buildAnchors, dayAt, type Anchor } from './day'
-import { clockToProg, hourToProg, phaseName, progToClock, progToHour } from './time'
+import { clockToProg, hourToProg, progToHour } from './time'
 import { SUNRISE, bodyAt, heroSky } from './celestial'
 import { drawCloudText } from './cloudText'
 import { FRAGMENT, UNIFORMS, VERTEX, type Uniform } from './shader'
@@ -59,8 +59,6 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
   let animate = home && !reduceMotion
 
   const hero = document.querySelector<HTMLElement>('[data-sky-hero]')
-  const clock = document.querySelector<HTMLElement>('[data-sky-clock]')
-  const clockText = document.querySelector<HTMLElement>('[data-sky-clock-text]')
   const header = document.querySelector<HTMLElement>('.site-header')
 
   // Pointer, eased (spec §5.3).
@@ -88,7 +86,6 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
   let running = false
   let announced = false
   let lastInk = root.dataset.ink
-  let lastClock = ''
   let scaleStep = 0
   let lastActive = 0
 
@@ -214,7 +211,7 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
       sp = 0.7
     }
 
-    // Sun and moon follow the clock: the visitor's hour on the hero, the scroll-clock hour once
+    // Sun and moon follow the clock: the visitor's hour on the hero, the scroll hour once
     // past it, walked between in time as the hero scrolls away. Lite pages sit mid-morning.
     // Across the hero: walk forward from now when the scroll day starts from now; otherwise fade
     // the disk out where it is and back in at the scroll day's position, so it never rewinds.
@@ -260,12 +257,6 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
     if (home) {
       const ink = inkAt(sp)
       if (ink !== lastInk) root.dataset.ink = lastInk = ink
-      if (clock) {
-        const show = tH > 0.5
-        if (clock.hasAttribute('data-visible') !== show) clock.toggleAttribute('data-visible', show)
-        const label = `${progToClock(day)} · ${phaseName(day)}`
-        if (show && clockText && label !== lastClock) clockText.textContent = lastClock = label
-      }
     }
   }
 

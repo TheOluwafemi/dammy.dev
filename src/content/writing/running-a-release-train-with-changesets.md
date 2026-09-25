@@ -1,17 +1,17 @@
 ---
-title: Running a 14-package release train with changesets
+title: Running a 14-package release train with Changesets
 summary: How Flaghoist publishes 14 packages, and three ways the release pipeline looked fine while doing nothing.
 published: 2026-09-21
 tags: [flaghoist, tooling, ci]
 ---
 
-Flaghoist is a monorepo that publishes 14 packages to npm: a zero-dependency core, a server, storage adapters, OpenFeature providers, Vue bindings, a CLI and an MCP server. I use Changesets to version and release them. This is the setup, followed by the part that actually cost time: three things that failed silently.
+Flaghoist is a monorepo that publishes 14 packages to npm: a zero-dependency core, a server, storage adapters, OpenFeature providers, Vue bindings, a CLI and an MCP server. I use Changesets to version and release them. This is the setup, followed by the part that cost time: three things that failed silently.
 
 ## The setup
 
 The convention is that a change to a published package carries a changeset, a small file saying which packages change and by how much. When those land on `main`, the release workflow either opens a "version packages" pull request or, once that is merged, publishes.
 
-A few settings do the real work:
+A few settings matter most:
 
 - `updateInternalDependencies: "patch"` bumps a dependent package when something it depends on is released, which is what keeps `core` and the packages built on it moving together.
 - An `ignore` list keeps the dashboard, the docs, the website, the examples and the adapter conformance suite out of releases. They are in the repo but not on npm.

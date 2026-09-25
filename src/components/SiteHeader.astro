@@ -2,7 +2,7 @@
 import { nav } from '../data/site'
 ---
 
-<!-- Spec §4.2: sticky, logo left, nav right. On narrow screens the nav scrolls sideways; no menu button. -->
+<!-- Spec §4.2: sticky, logo left, nav right. Below 480px the nav takes its own row under the logo; no menu button. -->
 <header class="site-header">
   <div class="container bar">
     <a class="logo" href="/">dammy.dev</a>
@@ -51,6 +51,20 @@ import { nav } from '../data/site'
   }
   .nav::-webkit-scrollbar {
     display: none;
+  }
+  /* Phones: four links don't fit beside the logo at a usable tap size, so they get a row of
+     their own, spread edge to edge. --header-h (tokens.css) matches this height. */
+  @media (max-width: 479px) {
+    .bar {
+      flex-wrap: wrap;
+      gap: 0;
+      padding-block: 6px 2px;
+    }
+    .nav {
+      flex-basis: calc(100% + 24px);
+      justify-content: space-between;
+      margin-inline: -12px;
+    }
   }
   .nav-link {
     display: flex;

@@ -5,12 +5,12 @@ import { site, socials } from '../data/site'
 
 <section id="contact" class="contact container" data-sky-time="23:00" aria-labelledby="contact-title">
   <div class="inner">
-    <SectionHead left="23:00 · Night" name="Contact" />
+    <SectionHead name="Contact" />
     <h2 id="contact-title" class="title">Say hello</h2>
     <div class="row">
       <a class="email" href={`mailto:${site.email}`}>{site.email}</a>
       <div class="actions">
-        <button type="button" class="btn btn-primary btn-small" data-copy={site.email}>copy email</button>
+        <button type="button" class="btn btn-primary btn-small" data-copy={site.email}>Copy email</button>
         {socials.map((s) => <a class="btn btn-outline btn-small" href={s.href} rel="me">{s.label}</a>)}
       </div>
     </div>

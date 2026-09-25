@@ -34,7 +34,7 @@ const dsl = createQuery()
 
 It covers text search, exact matches, ranges, patterns, boolean logic, nested queries and geo search, with generic types for type-safe queries.
 
-## The decision worth writing down
+## Dropping the HTTP client
 
 An earlier version shipped with an HTTP client, axios, and weighed about 65 KB. The current one is under 15 KB with no dependencies, because a query builder's job is to produce a JSON body. Sending it is the application's business.
 

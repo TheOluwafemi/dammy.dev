@@ -32,10 +32,15 @@ Personal site for dammy.dev: "A day with Damilola". Astro, static output, served
   - Only `transform`, `opacity`, colour and `filter` animate. Never `transition: all`, `ease-in` or `scale(0)`.
   - Responses to input stay under 300ms. Spec values over that are documented exceptions:
     - The work-row slide (350ms) and the card and button lifts (overshoot curve) are hover-only, gated to `(hover: hover) and (pointer: fine)`.
-    - Sky-driven colour changes (`--dur-skin`, 0.8s), the changelog row highlight (0.5s), the scroll-clock fade (0.4s) and the preloader fade (0.7s) are ambient, not responses to input.
+    - Sky-driven colour changes (`--dur-skin`, 0.8s), the changelog row highlight (0.5s) and the preloader fade (0.7s) are ambient, not responses to input.
   - Content ships visible: no `opacity: 0` in markup.
   - Emil Kowalski's skills are in `.claude/skills`; run `review-animations` before shipping.
 - **The sky** (`src/sky/`) is shared maths in `core.js` (also inlined into `<head>` by `bootstrap.ts`), with Vitest tests in `sky.test.ts` (`npm test`). The tests guard the contrast of every sky colour against the ink shown over it. `?at=HH:MM` previews the sky at any time of day.
 - **Git workflow:** every piece of work goes on its own branch off `main`, and is merged back into `main` when it's done. Never commit straight to `main`.
+- **Copy:** plain British English, first person.
+  - No em-dashes: titles use `Page · Damilola Oluwafemi`, and missing data is hidden. `src/copy.test.ts` enforces it.
+  - Unspaced en-dash year ranges (`2021–2022`), numerals for 10 and over, no Oxford comma, sentence-case buttons.
+  - No filler intensifiers (really, actually, proper, real) or claims of candour (honest, plainly).
+  - The full pass is in `docs/COPY-PLAN.md`.
 - **No bloat:** delete what a change makes unused (tokens, components, dependencies, assets) in the same change.
 - **Deploy:** `npm run deploy` (needs `wrangler login`). Cutover steps are in `docs/CUTOVER.md`.

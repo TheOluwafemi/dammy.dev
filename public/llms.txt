@@ -15,7 +15,7 @@ The home page is one scrolling day: Now at dawn, Work at midday, a Changelog of 
 
 - [Why Flaghoist speaks OFREP instead of shipping SDKs](https://dammy.dev/writing/why-flaghoist-speaks-ofrep)
 - [Sticky rollouts without storing who is in them](https://dammy.dev/writing/sticky-rollouts)
-- [Running a 14-package release train with changesets](https://dammy.dev/writing/running-a-release-train-with-changesets)
+- [Running a 14-package release train with Changesets](https://dammy.dev/writing/running-a-release-train-with-changesets)
 - [All writing](https://dammy.dev/writing) and [RSS](https://dammy.dev/rss.xml)
 
 ## About

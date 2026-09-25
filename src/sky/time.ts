@@ -1,4 +1,4 @@
-// Clock labels for the sky (spec §4.3, §4.4, §5.3). Pure functions: tested in time.test.ts.
+// Clock maths for the sky (spec §5.3). Pure functions: tested in sky.test.ts.
 
 /** Day progress 0..3 <-> clock hour. Keyframes from the spec: dawn 05:30, midday 12:00, dusk 18:30, night 23:30. */
 const KEYS: readonly [number, number][] = [
@@ -8,9 +8,6 @@ const KEYS: readonly [number, number][] = [
   [3, 23.5],
 ]
 
-export const pad = (n: number) => String(n).padStart(2, '0')
-export const fmtHM = (h: number, m: number) => `${pad(h)}:${pad(m)}`
-
 /** Day progress -> decimal clock hour (e.g. 1 -> 12). */
 export function progToHour(p: number): number {
   const c = Math.max(0, Math.min(3, p))
@@ -19,19 +16,7 @@ export function progToHour(p: number): number {
   return KEYS[i][1] + (KEYS[i + 1][1] - KEYS[i][1]) * f
 }
 
-/** Scroll-clock label for a day progress, rounded to 5 minutes. */
-export function progToClock(p: number): string {
-  const hr = progToHour(p)
-  let h = Math.floor(hr)
-  let m = Math.round((hr - h) * 12) * 5
-  if (m === 60) {
-    h += 1
-    m = 0
-  }
-  return fmtHM(h % 24, m)
-}
-
-/** Inverse of progToClock for a section label such as "12:10". */
+/** Day progress for a section's `data-sky-time`, such as "12:10". */
 export function clockToProg(label: string): number {
   const [h, m] = label.split(':').map(Number)
   return hourToProg(h + m / 60)
@@ -48,36 +33,14 @@ export function hourToProg(hr: number): number {
   return 3
 }
 
-/** Phase word for the scroll clock. */
-export function phaseName(p: number): string {
-  return p < 0.75 ? 'dawn' : p < 1.4 ? 'midday' : p < 1.8 ? 'afternoon' : p < 2.6 ? 'dusk' : 'night'
-}
-
-/** Phase word for the hero eyebrow ("Right now it's … where you are"), from the local hour. */
+/** Phase word for the hero eyebrow ("Dawn where you are"), from the local hour. */
+// Matches the sky's sun (celestial.ts): it rises at 05:30 and sets at 19:30, so dusk is the
+// hour and a half around sunset, not the whole evening.
 export function heroPhase(hr: number): string {
   if (hr >= 5 && hr < 7) return 'dawn'
   if (hr >= 7 && hr < 12) return 'morning'
   if (hr >= 12 && hr < 17) return 'afternoon'
-  if (hr >= 17 && hr < 20.5) return 'dusk'
+  if (hr >= 17 && hr < 19) return 'evening'
+  if (hr >= 19 && hr < 20.5) return 'dusk'
   return 'night'
-}
-
-/** Hours and minutes in London, whatever the visitor's zone. */
-export function londonHM(date: Date): [number, number] {
-  try {
-    const [h, m] = date
-      .toLocaleString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false })
-      .split(':')
-      .map(Number)
-    return [h % 24, m]
-  } catch {
-    return [date.getHours(), date.getMinutes()]
-  }
-}
-
-/** The hero time pill (spec §4.3). */
-export function timeLine(date: Date): string {
-  const you = fmtHM(date.getHours(), date.getMinutes())
-  const me = fmtHM(...londonHM(date))
-  return you === me ? `Same time as me: ${me} in the UK` : `${you} for you · ${me} for me in the UK`
 }

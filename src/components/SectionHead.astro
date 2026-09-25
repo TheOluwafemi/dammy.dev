@@ -1,9 +1,10 @@
 ---
-// The row every section opens with (spec §4.6): TIME · PHASE ——— NAME.
+// The row every section opens with: an optional label, a rule, then NAME. The spec put the
+// section's time and phase on the left; home leaves it out and lets the sky say it.
 // When the section has no big heading of its own, the name is the section's <h2>.
 interface Props {
-  /** Left of the rule, e.g. "12:10 · Midday". */
-  left: string
+  /** Left of the rule, e.g. "United Kingdom". */
+  left?: string
   name: string
   /** id for the <h2>, when the name is the section's heading. */
   headingId?: string
@@ -12,7 +13,7 @@ const { left, name, headingId } = Astro.props
 ---
 
 <div class="section-head">
-  <span aria-hidden="true">{left}</span>
+  {left && <span aria-hidden="true">{left}</span>}
   <span class="line" aria-hidden="true"></span>
   {headingId ? <h2 id={headingId} class="name">{name}</h2> : <span class="name" aria-hidden="true">{name}</span>}
 </div>

@@ -32,9 +32,9 @@ export function drawCloudText(target: HTMLCanvasElement, W: number, H: number, d
   if (widest > room) size *= room / widest
   ctx.font = font(size)
 
-  // Align the ink (not the advance box) with the content edge, so the cloud lines up with the logo.
-  const inkLeft = ctx.measureText(lines[0]).actualBoundingBoxLeft || 0
-  const x = box.left * dpr + inkLeft - size * 0.02
+  // Centred in the content box, like the hero block under it.
+  const x = (box.left + box.width / 2) * dpr
+  ctx.textAlign = 'center'
   ctx.fillStyle = '#fff'
   ctx.shadowColor = '#fff'
   ctx.shadowBlur = size * 0.2

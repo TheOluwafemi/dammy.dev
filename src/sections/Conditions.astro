@@ -3,18 +3,18 @@ import { conditions } from '../data/site'
 import { getPackages, summarise } from '../lib/npm'
 
 const all = summarise(await getPackages())
-// 7,212 -> "7.2k". Omitted (shown as a dash) if npm was unreachable at build time.
+// 7,212 -> "7.2k". The downloads item is left out if npm was unreachable at build time.
 const compact = (n: number) => (n >= 1000 ? `${Math.round(n / 100) / 10}k` : String(n))
 
 const items = [
-  { label: 'Conditions', ...conditions.building },
-  { label: 'Pressure', value: all.downloads === null ? '—' : compact(all.downloads), note: 'downloads a month' },
-  { label: 'Fronts', value: String(all.count), note: 'packages on npm' },
-  { label: 'Visibility', ...conditions.visibility },
+  { label: 'Building', ...conditions.building },
+  ...(all.downloads === null ? [] : [{ label: 'Downloads', value: compact(all.downloads), note: 'a month on npm' }]),
+  { label: 'Packages', value: String(all.count), note: 'published on npm' },
+  { label: 'Availability', ...conditions.availability },
 ]
 ---
 
-<section class="conditions" aria-label="Conditions">
+<section class="conditions" aria-label="At a glance">
   <dl class="container grid">
     {items.map((i) => (
       <div class="item">

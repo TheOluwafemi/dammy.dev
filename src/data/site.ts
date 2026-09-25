@@ -23,50 +23,52 @@ export const footerLinks = [
 ] as const
 
 /**
- * The Conditions strip (spec §4.5). Downloads and package counts are filled in from npm at
- * build time; these are the words around them.
- * `visibility` is a public statement about availability: keep it true.
+ * The strip under the hero (spec §4.5, with plain labels instead of the spec's weather words).
+ * Downloads and package counts are filled in from npm at build time; these are the rest.
+ * `availability` is a public statement: keep it true.
  */
 export const conditions = {
-  building: { value: 'Building', note: 'Flaghoist, pre-alpha' },
-  visibility: { value: 'Clear', note: 'open to talk' },
+  building: { value: 'Flaghoist', note: 'open-source feature flags' },
+  availability: { value: 'Open to talk', note: 'contact details below' },
 } as const
 
+/** Profile links shown in the Contact section. */
 export const socials = [
   { label: 'GitHub', href: 'https://github.com/TheOluwafemi' },
   { label: 'npm', href: 'https://www.npmjs.com/~dammyskillz_' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/damilola-oluwafemi' },
-  { label: 'X', href: 'https://twitter.com/dammyskillz_' },
 ] as const
+
+/** On the CV only. */
+export const linkedin = 'https://www.linkedin.com/in/damilola-oluwafemi'
 
 /** The "Now" block. Update the date each time you touch the text: it is shown, so staleness is honest. */
 export const now = {
   updated: 'September 2026',
   /** The large statement (spec §4.6). */
-  statement: 'Building Flaghoist. Pre-alpha, heading for a stable release and a real docs site.',
+  statement: 'Flaghoist is live.',
   tiles: [
-    { label: 'In progress', value: 'Stable release' },
-    { label: 'In progress', value: 'Docs site' },
+    { label: 'Docs', value: 'docs.flaghoist.dev', href: 'https://docs.flaghoist.dev' },
+    { label: 'Demo', value: 'demo.flaghoist.dev', href: 'https://demo.flaghoist.dev' },
   ],
 } as const
 
-/** Writing published on other sites. Descriptions are the ones from the old site. */
+/** Writing published on other sites. */
 export const elsewhere = [
   {
     title: 'What is NPX?',
-    summary: 'NPX is an NPM package runner that makes it really easy to install any sort of node executable that would have normally been installed using NPM.',
+    summary: 'What npx does, and how it runs a package without a global install.',
     href: 'https://www.educative.io/answers/what-is-npx',
     site: 'Educative',
   },
   {
     title: 'MVC explained',
-    summary: 'A brief explanation of the Model-View-Controller architectural pattern, popularly referred to as MVC.',
+    summary: 'A short explanation of the Model-View-Controller pattern.',
     href: 'https://www.educative.io/answers/mvc-explained',
     site: 'Educative',
   },
   {
     title: 'Getting started with Vue',
-    summary: 'Vue is a JavaScript framework for building user interfaces. It is capable of powering sophisticated single-page applications (SPAs).',
+    summary: 'An introduction to Vue, the JavaScript framework for building user interfaces.',
     href: 'https://medium.com/@The_Oluwafemi/getting-started-with-vue-f654da6125dc',
     site: 'Medium',
   },

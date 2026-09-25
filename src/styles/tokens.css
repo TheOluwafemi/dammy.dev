@@ -91,11 +91,19 @@
   --glow: 0 1px 28px rgba(16, 14, 36, 0.5);
 }
 
-/* Changelog panel: always light, whatever the sky (spec §3.4). */
+/* Phones: the nav gets its own row (SiteHeader.astro): 6px + 44px logo, 44px nav + 2px, 1px rule. */
+@media (max-width: 479px) {
+  :root {
+    --header-h: 97px;
+  }
+}
+
+/* Changelog panel: always light, whatever the sky (spec §3.4), and see-through so the sky moves
+   behind it. The alpha and the muted ink are paired: sky.test.ts checks 4.5:1 over every sky. */
 :root {
-  --paper: rgba(255, 252, 247, 0.9);
+  --paper: rgba(255, 252, 247, 0.6);
   --paper-ink: #17131d;
-  --paper-ink-muted: #57505e;
+  --paper-ink-muted: #3d3744;
   --paper-rule: rgba(23, 19, 29, 0.1);
 
   --tag-planned-bg: #efe3ff;

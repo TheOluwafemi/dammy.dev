@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { gzipSync } from 'node:zlib'
 import { INK_FLIP, PAL_HEX, hexRgb, inkAt, litePal, palAt, realProg, skyClock, skyGradient, veilAt } from './core.js'
 import { buildAnchors, dayAt } from './day'
-import { clockToProg, heroPhase, hourToProg, phaseName, progToClock, progToHour, timeLine } from './time'
+import { clockToProg, heroPhase, hourToProg, progToHour } from './time'
 import { bootScript } from './bootstrap'
 import { bodyAt, heroSky, hourBetween, SUNRISE, SUNSET, MOONRISE, MOONSET } from './celestial'
 
@@ -75,6 +75,23 @@ describe('ink and contrast (spec §3.3, plan §6.5)', () => {
     expect(inkAt(2.55)).toBe('light')
   })
 
+  it('keeps the see-through changelog panel at 4.5:1 over every sky', () => {
+    const css = readFileSync(new URL('../styles/tokens.css', import.meta.url), 'utf8')
+    const alpha = Number(css.match(/--paper: rgba\(255, 252, 247, ([\d.]+)\)/)![1])
+    const muted = hexRgb(css.match(/--paper-ink-muted: (#[0-9a-f]{6})/)![1])
+    const paper = hexRgb('#fffcf7')
+    let worst = Infinity
+    for (let i = 0; i <= 300; i++) {
+      const sp = i / 100
+      const [c0, c1, c2, c3] = palAt(sp)
+      const v = veilAt(sp)
+      for (const px of [c0, c1, c2, mixc(c0, c3, 0.4), mixc(c1, c3, 0.4)]) {
+        worst = Math.min(worst, ratio(muted, mixc(mixc(px, v.slice(0, 3), v[3]), paper, alpha)))
+      }
+    }
+    expect(worst).toBeGreaterThanOrEqual(4.5)
+  })
+
   it('keeps every veiled sky colour at 4.5:1 against the ink, all day', () => {
     let worst = Infinity
     for (let i = 0; i <= 300; i++) {
@@ -90,28 +107,16 @@ describe('ink and contrast (spec §3.3, plan §6.5)', () => {
   })
 })
 
-describe('clock labels (spec §5.3)', () => {
+describe('clock (spec §5.3)', () => {
   it('maps day progress to the clock keyframes', () => {
-    expect(progToClock(0)).toBe('05:30')
-    expect(progToClock(1)).toBe('12:00')
-    expect(progToClock(2)).toBe('18:30')
-    expect(progToClock(3)).toBe('23:30')
+    expect([0, 1, 2, 3].map(progToHour)).toEqual([5.5, 12, 18.5, 23.5])
   })
-  it('inverts the section labels', () => {
-    for (const label of ['06:40', '12:10', '16:00', '18:30', '23:00']) expect(progToClock(clockToProg(label))).toBe(label)
-  })
-  it('names each section by its own time', () => {
-    expect(phaseName(clockToProg('06:40'))).toBe('dawn')
-    expect(phaseName(clockToProg('12:10'))).toBe('midday')
-    expect(phaseName(clockToProg('16:00'))).toBe('afternoon')
-    expect(phaseName(clockToProg('18:30'))).toBe('dusk')
-    expect(phaseName(clockToProg('23:00'))).toBe('night')
+  it('inverts the section times', () => {
+    for (const h of [6 + 40 / 60, 12 + 10 / 60, 16, 18.5, 23]) expect(progToHour(hourToProg(h))).toBeCloseTo(h)
+    expect(progToHour(clockToProg('12:10'))).toBeCloseTo(12 + 10 / 60)
   })
   it('names the hero phase from the hour', () => {
-    expect([6, 8.5, 14, 18.5, 23, 3].map(heroPhase)).toEqual(['dawn', 'morning', 'afternoon', 'dusk', 'night', 'night'])
-  })
-  it('writes the time pill', () => {
-    expect(timeLine(new Date('2026-09-24T14:05:00Z'))).toMatch(/for me in the UK|Same time as me/)
+    expect([6, 8.5, 14, 17 + 25 / 60, 19.5, 23, 3].map(heroPhase)).toEqual(['dawn', 'morning', 'afternoon', 'evening', 'dusk', 'night', 'night'])
   })
 })
 
@@ -124,8 +129,8 @@ describe('anchor-based day (plan §6.3)', () => {
     { at: 5500, prog: clockToProg('23:00') },
   ])
   it('reaches each section at its own time', () => {
-    expect(progToClock(dayAt(2000, anchors))).toBe('12:10')
-    expect(progToClock(dayAt(4500, anchors))).toBe('18:30')
+    expect(progToHour(dayAt(2000, anchors))).toBeCloseTo(12 + 10 / 60)
+    expect(progToHour(dayAt(4500, anchors))).toBeCloseTo(18.5)
     expect(dayAt(6000, anchors)).toBe(3)
     expect(dayAt(0, anchors)).toBe(0)
   })

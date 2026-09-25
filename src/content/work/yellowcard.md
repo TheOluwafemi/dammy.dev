@@ -12,7 +12,7 @@ caseStudy: true
 stack: [Vue, Vuex, Vue-i18n, Vuetify, Nuxt, Prismic]
 metrics:
   - { label: New markets supported, value: '10' }
-  - { label: Lighthouse audit, value: '+33%' }
+  - { label: Lighthouse score, value: '+33%' }
 links:
   - { label: Yellowcard, href: 'https://yellowcard.io' }
   - { label: Yellowcard Academy, href: 'https://academy.yellowcard.io' }
@@ -24,13 +24,13 @@ Yellowcard is a cryptocurrency exchange serving customers across Africa. I worke
 
 ## What I worked on
 
-**Launching in new countries.** I supported the launch in 10 new African markets by updating the transaction and KYC methods for each one.
+**Launching in new countries.** I helped launch in 10 new African markets by updating the transaction and KYC methods for each one.
 
-**Speaking the customer's language.** I worked with other engineers to add internationalisation across the web application, and added multi-language support to the marketing website, to improve engagement and acquisition in non-English-speaking countries. The application used Vue with Vue-i18n and Vuetify.
+**Speaking the customer's language.** I worked with other engineers to add internationalisation across the web application, and added multi-language support to the marketing website, to reach customers in non-English-speaking countries. The application used Vue with Vue-i18n and Vuetify.
 
 **A privacy mode for the wallet.** I implemented a setting that lets a user choose whether their transactions and wallet details are displayed on screen.
 
-**The website revamp.** After a brand refresh I coordinated and managed the revamp of the company website, built on Nuxt with Prismic as the CMS. I added static and dynamic meta tags for search visibility, and iterated on performance and accessibility, which improved the site's Lighthouse audit by 33%.
+**The website revamp.** After a brand refresh I led the revamp of the company website, built on Nuxt with Prismic as the CMS. I added static and dynamic meta tags for search visibility, and worked on performance and accessibility, raising the site's Lighthouse score by 33%.
 
 ## Yellowcard Academy
 

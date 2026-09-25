@@ -11,7 +11,7 @@ stack: [TypeScript, Hono, Cloudflare Workers, OpenFeature, Vue]
 npm: flaghoist
 metrics:
   - { label: Licence, value: Apache-2.0 }
-  - { label: Status, value: Pre-alpha }
+  - { label: Status, value: 'Live, pre-1.0' }
   - { label: Languages verified live, value: '7' }
   - { label: Storage adapters, value: '5' }
 links:
@@ -29,7 +29,7 @@ Flaghoist is a feature-flag service you run yourself. `npm create flaghoist` wri
 
 ## Why it exists
 
-A feature flag is, at its core, a small document you read on a hot path. Hosted services are priced and built for far more than that, and the self-hosted options usually mean an always-on server and a database for something that changes a few times a week.
+A feature flag is a small document you read on a hot path. Hosted services are priced and built for far more than that, and the self-hosted options usually mean an always-on server and a database for something that changes a few times a week.
 
 So the design goals were narrow. Nothing running when nobody is asking. Storage you already pay for. A standard protocol, so nobody is locked into my SDKs.
 
@@ -70,22 +70,20 @@ interface StorageAdapter {
 }
 ```
 
-Audit-log and webhook methods exist too, but they are optional and the server falls back to memory. Four methods is small enough that Cloudflare KV, Redis, Postgres, SQLite and an in-memory adapter all fit. It is also small enough to write one shared conformance suite that every adapter must pass, so "bring your own database" is verified and not just promised.
+Audit-log and webhook methods exist too, but they are optional and the server falls back to memory. Four methods is small enough that Cloudflare KV, Redis, Postgres, SQLite and an in-memory adapter all fit. It is also small enough to write one shared conformance suite that every adapter must pass, so "bring your own database" is backed by tests.
 
-### Fourteen packages
+### 14 packages
 
 The evaluation engine, `@flaghoist/core`, has zero dependencies. The server, each storage adapter, each OpenFeature provider, the Vue bindings, the CLI, the MCP server and the admin client that the CLI, dashboard and MCP server share are each their own package. An app installs only what it uses, and the engine has nothing to inherit. Versioning and changelogs run through Changesets.
 
-The cost is coordination. A change to `core` ripples into most of the others, and fourteen version numbers have to stay honest.
+The cost is coordination. A change to `core` ripples into most of the others, and 14 version numbers have to stay in step.
 
 ## What it does not do yet
-
-It is pre-alpha, and I would rather say so plainly.
 
 | | Flaghoist today |
 | --- | --- |
 | Flag types | Boolean only. No multivariate flags yet. |
 | Experiments and A/B tests | No. Bring your own analytics. |
-| Maturity | Pre-alpha, one maintainer. |
+| Maturity | Pre-1.0, one maintainer. |
 
 The project is built so that matters less than it sounds. It is Apache-2.0, so anyone can fork it. Your flags live in your own storage. The API is an open standard, so the same providers work against another OFREP server. And `flaghoist eject` hands you a self-contained TypeScript project. If it stalled tomorrow, you would keep running exactly what you run today.

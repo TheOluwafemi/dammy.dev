@@ -43,11 +43,11 @@ Three properties follow, and you can check each one below by dragging the slider
 
 Switch the demo to "Random on every request" and raise the slider. People lose a feature you only meant to widen. That is what the hash is preventing.
 
-## Details worth knowing
+## Details
 
 SHA-256 is doing determinism and an even spread here, and nothing more. Its cryptographic strength is incidental. It is also available in every runtime through Web Crypto, and the same seed gives the same bucket everywhere.
 
-The modulo is very slightly uneven in theory: 2<sup>32</sup> is not a multiple of 100, so each of buckets 0 to 95 comes up one more time than each of 96 to 99, out of about 43 million times apiece. Nothing about a feature rollout can notice that.
+The modulo is slightly uneven in theory: 2<sup>32</sup> is not a multiple of 100, so each of buckets 0 to 95 comes up one more time than each of 96 to 99, out of about 43 million times apiece. Nothing about a feature rollout can notice that.
 
 The edge cases fail conservatively. A percentage of 100 or more is always in, zero or less is always out, and a `NaN` is clamped to zero, so a malformed value keeps the feature hidden.
 
