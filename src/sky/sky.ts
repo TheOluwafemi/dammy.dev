@@ -11,9 +11,10 @@
 // screen resolution (the clouds are soft), drops to ~30fps when nothing is moving, and lowers
 // its resolution and then stops animating if frames stay slow.
 
-import { clamp01, inkAt, litePal, palAt, realProg } from './core.js'
+import { clamp01, inkAt, litePal, palAt, realProg, skyClock, veilAt } from './core.js'
 import { buildAnchors, dayAt, type Anchor } from './day'
-import { clockToProg, phaseName, progToClock } from './time'
+import { clockToProg, phaseName, progToClock, progToHour } from './time'
+import { bodyAt, hourBetween } from './celestial'
 import { drawCloudText } from './cloudText'
 import { FRAGMENT, UNIFORMS, VERTEX, type Uniform } from './shader'
 import { SKY_CONDENSE, markSkyReady } from './events'
@@ -158,11 +159,13 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
     anchors = buildAnchors(heroH, max, sections)
   }
 
+  let realHour = 12
   function realNow() {
     const now = Date.now()
     if (now - realAt > 30_000) {
-      const d = new Date()
-      real = realProg(d.getHours() + d.getMinutes() / 60)
+      const d = skyClock(location.search)
+      realHour = d.getHours() + d.getMinutes() / 60
+      real = realProg(realHour)
       realAt = now
     }
     return real
@@ -202,11 +205,15 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
       sp = 0.7
     }
 
-    const u = clamp01(sp / 2.4)
-    const moon = clamp01((sp - 2.3) / 0.5)
-    const sunX = mix(0.12 + 0.76 * u, 0.82, moon)
-    const sunY = mix(0.5 + 0.36 * Math.sin(Math.PI * u), 0.82, moon)
+    // Sun and moon follow the clock: the visitor's hour on the hero, the scroll-clock hour once
+    // past it, walked between in time as the hero scrolls away. Lite pages sit mid-morning.
+    const hour = home ? hourBetween(realHour, progToHour(day), tH) : 10
+    const body = bodyAt(hour)
+    const moon = body.moon
+    const sunX = body.x
+    const sunY = body.y
     const warm = clamp01((sp - 1.5) / 0.6) * (1 - moon)
+    const veil = home ? veilAt(sp) : [0, 0, 0, 0]
 
     m[0] += (mt[0] - m[0]) * 0.08
     m[1] += (mt[1] - m[1]) * 0.08
@@ -224,6 +231,8 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
     gl!.uniform1f(U.txtOn, textFade * condense)
     gl!.uniform1f(U.g, GRAIN)
     gl!.uniform1f(U.warm, warm)
+    gl!.uniform1f(U.veil, veil[3])
+    gl!.uniform3f(U.vc, veil[0], veil[1], veil[2])
     gl!.uniform3fv(U.c0, cols[0])
     gl!.uniform3fv(U.c1, cols[1])
     gl!.uniform3fv(U.c2, cols[2])

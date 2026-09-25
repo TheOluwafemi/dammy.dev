@@ -159,14 +159,14 @@
 </style>
 
 <script>
-  import { realProg } from '../sky/core.js'
+  import { realProg, skyClock } from '../sky/core.js'
   import { heroPhase, timeLine } from '../sky/time'
 
   const eyebrow = document.querySelector<HTMLElement>('[data-hero-sky]')
   const pill = document.querySelector<HTMLElement>('[data-time-line]')
 
   function update() {
-    const now = new Date()
+    const now = skyClock(location.search)
     const rp = realProg(now.getHours() + now.getMinutes() / 60)
     if (eyebrow) eyebrow.textContent = `Right now it’s ${heroPhase(rp)} where you are`
     if (pill) {

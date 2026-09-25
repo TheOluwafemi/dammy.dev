@@ -115,6 +115,8 @@
     const pct = el.querySelector<HTMLElement>('[data-pre-pct]')!
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
     const minTime = reduce ? 300 : 600
+    // ?preload=hold: keep it up, with the sun swinging across the arc, for design review.
+    const hold = /[?&]preload=hold\b/.test(location.search)
     const hardStop = 4500
     const t0 = performance.now()
 
@@ -138,16 +140,16 @@
 
     // A timer, not the frame loop: background tabs pause animation frames, and the page must
     // never stay covered.
-    setTimeout(finish, hardStop)
+    if (!hold) setTimeout(finish, hardStop)
 
     const step = () => {
       if (done) return
       const elapsed = performance.now() - t0
       const target = (Number(fonts) + Number(sky) + Math.min(1, elapsed / minTime)) / 3
-      p += (target - p) * (reduce ? 1 : 0.07)
+      p = hold ? (Math.sin(elapsed / 900 - Math.PI / 2) + 1) / 2 : p + (target - p) * (reduce ? 1 : 0.07)
       arm.style.transform = `rotate(${(p * 180).toFixed(1)}deg)`
       pct.textContent = `${Math.round(p * 100)}%`
-      if (p > 0.985 && fonts && sky && elapsed >= minTime) return finish()
+      if (!hold && p > 0.985 && fonts && sky && elapsed >= minTime) return finish()
       requestAnimationFrame(step)
     }
     step()

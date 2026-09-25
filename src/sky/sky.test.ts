@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { INK_FLIP, PAL_HEX, hexRgb, inkAt, litePal, palAt, realProg, skyGradient } from './core.js'
+import { readFileSync } from 'node:fs'
+import { gzipSync } from 'node:zlib'
+import { INK_FLIP, PAL_HEX, hexRgb, inkAt, litePal, palAt, realProg, skyClock, skyGradient, veilAt } from './core.js'
 import { buildAnchors, dayAt } from './day'
 import { clockToProg, heroPhase, phaseName, progToClock, timeLine } from './time'
 import { bootScript } from './bootstrap'
+import { bodyAt, hourBetween, SUNRISE, SUNSET, MOONRISE, MOONSET } from './celestial'
 
 describe('realProg (spec §5.2)', () => {
   it('maps the clock onto dawn, day, dusk and night', () => {
@@ -12,6 +15,14 @@ describe('realProg (spec §5.2)', () => {
     expect(realProg(18.5)).toBe(2)
     expect(realProg(21.99)).toBeCloseTo(2.997, 2)
     expect(realProg(22)).toBe(3)
+  })
+})
+
+describe('?at= preview', () => {
+  it('overrides the clock', () => {
+    const d = skyClock('?at=18:30')
+    expect([d.getHours(), d.getMinutes()]).toEqual([18, 30])
+    expect(skyClock('').getTime()).toBeGreaterThan(0)
   })
 })
 
@@ -30,16 +41,43 @@ describe('palette (spec §3.2)', () => {
   it('lightens the lite sky towards white', () => {
     litePal().forEach((c, i) => c.forEach((v, j) => expect(v).toBeGreaterThanOrEqual(palAt(0.85)[i][j])))
   })
-  it('builds a CSS gradient from c0, c2 and c3', () => {
-    expect(skyGradient(palAt(3))).toBe('linear-gradient(160deg,rgb(29,33,80),rgb(91,62,158) 60%,rgb(255,182,94))')
+  it('keeps the static no-JS fallback in tokens.css in sync with the code', () => {
+    const css = readFileSync(new URL('../styles/tokens.css', import.meta.url), 'utf8')
+    expect(css).toContain(`--sky-fallback: ${skyGradient(palAt(3), veilAt(3))};`)
   })
 })
 
-describe('ink (spec §3.3)', () => {
-  it('flips from dark to light at 1.75', () => {
-    expect(INK_FLIP).toBe(1.75)
-    expect(inkAt(1.749)).toBe('dark')
-    expect(inkAt(1.75)).toBe('light')
+describe('ink and contrast (spec §3.3, plan §6.5)', () => {
+  const lum = (c: number[]) => {
+    const f = (v: number) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2])
+  }
+  const ratio = (a: number[], b: number[]) => {
+    const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p)
+    return (x + 0.05) / (y + 0.05)
+  }
+  const mixc = (a: number[], b: number[], t: number) => a.map((v, i) => v + (b[i] - v) * t)
+  const DARK = hexRgb('#17131d')
+  const LIGHT = hexRgb('#fbf5ff')
+
+  it('flips late, at 2.55', () => {
+    expect(INK_FLIP).toBe(2.55)
+    expect(inkAt(2.549)).toBe('dark')
+    expect(inkAt(2.55)).toBe('light')
+  })
+
+  it('keeps every veiled sky colour at 4.5:1 against the ink, all day', () => {
+    let worst = Infinity
+    for (let i = 0; i <= 300; i++) {
+      const sp = i / 100
+      const [c0, c1, c2, c3] = palAt(sp)
+      const v = veilAt(sp)
+      const ink = inkAt(sp) === 'dark' ? DARK : LIGHT
+      for (const px of [c0, c1, c2, mixc(c0, c3, 0.4), mixc(c1, c3, 0.4)]) {
+        worst = Math.min(worst, ratio(ink, mixc(px, v.slice(0, 3), v[3])))
+      }
+    }
+    expect(worst).toBeGreaterThanOrEqual(4.5)
   })
 })
 
@@ -103,12 +141,13 @@ describe('anchor-based day (plan §6.3)', () => {
 describe('head bootstrap', () => {
   it('is small, and sets ink and sky before paint', () => {
     const code = bootScript('home')
-    expect(code.length).toBeLessThan(2000)
+    // It is inlined into every page's <head>: keep the transfer small.
+    expect(gzipSync(code).length).toBeLessThan(1400)
     const props: Record<string, string> = {}
     const root = { dataset: {} as Record<string, string>, style: { setProperty: (k: string, v: string) => (props[k] = v) } }
     const meta = { content: '', setAttribute: (_: string, v: string) => (meta.content = v) }
     const doc = { documentElement: root, querySelector: () => meta }
-    new Function('document', code)(doc)
+    new Function('document', 'location', code)(doc, { search: '' })
     expect(root.dataset.js).toBe('')
     expect(['dark', 'light']).toContain(root.dataset.ink)
     expect(props['--sky-fallback']).toMatch(/^linear-gradient\(160deg,rgb/)
@@ -119,7 +158,7 @@ describe('head bootstrap', () => {
       const props: Record<string, string> = {}
       const root = { dataset: {} as Record<string, string>, style: { setProperty: (k: string, v: string) => (props[k] = v) } }
       const sessionStorage = { getItem: () => (seen ? '1' : null) }
-      new Function('document', 'sessionStorage', bootScript(mode))({ documentElement: root, querySelector: () => null }, sessionStorage)
+      new Function('document', 'sessionStorage', 'location', bootScript(mode))({ documentElement: root, querySelector: () => null }, sessionStorage, { search: '' })
       return { root, props }
     }
     const first = run('home', false)
@@ -128,9 +167,57 @@ describe('head bootstrap', () => {
     expect(run('home', true).root.dataset.preloading).toBeUndefined()
     expect(run('lite', false).root.dataset.preloading).toBeUndefined()
   })
+  it('shows the preloader on every load with ?preload', () => {
+    const root = { dataset: {} as Record<string, string>, style: { setProperty: () => {} } }
+    const seen = { getItem: () => '1' }
+    new Function('document', 'sessionStorage', 'location', bootScript('home'))({ documentElement: root, querySelector: () => null }, seen, { search: '?preload' })
+    expect(root.dataset.preloading).toBe('')
+  })
   it('always uses dark ink on lite pages', () => {
     const root = { dataset: {} as Record<string, string>, style: { setProperty: () => {} } }
-    new Function('document', bootScript('lite'))({ documentElement: root, querySelector: () => null })
+    new Function('document', 'location', bootScript('lite'))({ documentElement: root, querySelector: () => null }, { search: '' })
     expect(root.dataset.ink).toBe('dark')
+  })
+})
+
+describe('sun and moon (east on the left, west on the right)', () => {
+  const HIDDEN = -0.06 // the disk's radius is about 0.06 of the screen height
+  it('rises in the east and sets in the west, below the screen', () => {
+    const rise = bodyAt(SUNRISE)
+    const set = bodyAt(SUNSET)
+    expect(rise.moon).toBe(0)
+    expect(rise.x).toBeLessThan(0.1)
+    expect(set.x).toBeGreaterThan(0.9)
+    expect(rise.y).toBeLessThan(HIDDEN)
+    expect(set.y).toBeLessThan(HIDDEN)
+  })
+  it('is high and central at midday', () => {
+    const noon = bodyAt((SUNRISE + SUNSET) / 2)
+    expect(noon.y).toBeGreaterThan(0.8)
+    expect(Math.abs(noon.x - 0.5)).toBeLessThan(0.02)
+  })
+  it('brings the moon up in the east after sunset and down in the west before dawn', () => {
+    expect(bodyAt(MOONRISE).moon).toBe(1)
+    expect(bodyAt(MOONRISE).x).toBeLessThan(0.1)
+    expect(bodyAt(MOONSET - 0.001).x).toBeGreaterThan(0.9)
+    expect(bodyAt(0.5).moon).toBe(1)
+    expect(bodyAt(0.5).y).toBeGreaterThan(0.6)
+  })
+  it('only swaps sun and moon while the disk is below the horizon', () => {
+    let prev = bodyAt(0)
+    for (let m = 1; m <= 24 * 60; m++) {
+      const cur = bodyAt(m / 60)
+      if (cur.moon !== prev.moon) {
+        expect(prev.y).toBeLessThan(HIDDEN)
+        expect(cur.y).toBeLessThan(HIDDEN)
+      }
+      prev = cur
+    }
+  })
+  it('walks the short way round the clock', () => {
+    expect(hourBetween(23, 5.5, 0.5)).toBeCloseTo(2.25, 5)
+    expect(hourBetween(14, 5.5, 0.5)).toBeCloseTo(9.75, 5)
+    expect(hourBetween(14, 5.5, 0)).toBe(14)
+    expect(hourBetween(14, 5.5, 1)).toBeCloseTo(5.5, 5)
   })
 })

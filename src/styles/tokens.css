@@ -65,9 +65,10 @@
   --dur-row: 350ms;
   --dur-skin: 0.8s;
 
-  /* Sky fallback: the no-JS look and what shows before WebGL draws (spec §5.1).
-     The head script replaces it with the visitor's current palette in R1. */
-  --sky-fallback: linear-gradient(160deg, #1d2150, #5b3e9e 60%, #ffb65e);
+  /* Sky fallback: the no-JS look and what shows before WebGL draws (spec §5.1): the night
+     palette, veiled for contrast. Must equal skyGradient(palAt(3), veilAt(3)) in src/sky/core.js
+     (a test checks). The head script replaces it with the visitor's current sky. */
+  --sky-fallback: linear-gradient(160deg,rgb(27,29,72),rgb(77,53,135) 60%,rgb(100,78,76));
 
   /* Ink skin: dark by default (dawn and day). The head script and the sky loop set
      data-ink on <html>. */

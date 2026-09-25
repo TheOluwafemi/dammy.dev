@@ -10,7 +10,7 @@ const cache = new Map<SkyMode, string>()
 export function bootScript(mode: SkyMode): string {
   let code = cache.get(mode)
   if (!code) {
-    const src = coreSource.replace(/^export /gm, '') + `\nboot(document.documentElement, ${JSON.stringify(mode)}, new Date());`
+    const src = coreSource.replace(/^export /gm, '') + `\nboot(document.documentElement, ${JSON.stringify(mode)}, skyClock(location.search));`
     code = transformSync(src, { loader: 'js', format: 'iife', minify: true, target: 'es2019' }).code
     cache.set(mode, code)
   }

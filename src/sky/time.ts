@@ -11,12 +11,17 @@ const KEYS: readonly [number, number][] = [
 export const pad = (n: number) => String(n).padStart(2, '0')
 export const fmtHM = (h: number, m: number) => `${pad(h)}:${pad(m)}`
 
-/** Scroll-clock label for a day progress, rounded to 5 minutes. */
-export function progToClock(p: number): string {
+/** Day progress -> decimal clock hour (e.g. 1 -> 12). */
+export function progToHour(p: number): number {
   const c = Math.max(0, Math.min(3, p))
   const i = Math.min(2, Math.floor(c))
   const f = c - i
-  const hr = KEYS[i][1] + (KEYS[i + 1][1] - KEYS[i][1]) * f
+  return KEYS[i][1] + (KEYS[i + 1][1] - KEYS[i][1]) * f
+}
+
+/** Scroll-clock label for a day progress, rounded to 5 minutes. */
+export function progToClock(p: number): string {
+  const hr = progToHour(p)
   let h = Math.floor(hr)
   let m = Math.round((hr - h) * 12) * 5
   if (m === 60) {

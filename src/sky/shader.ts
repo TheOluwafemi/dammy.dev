@@ -1,10 +1,11 @@
-// Verbatim from BUILD-SPEC.md §5.5. Domain-warped fbm sky, a sun or moon, twinkling stars,
-// cloud text sampled from a texture and dispersed around the pointer, and grain.
+// From BUILD-SPEC.md §5.5, with one addition: `veil` / `vc`, a contrast veil laid over the sky
+// before the cloud text (so the headline stays bright). Domain-warped fbm sky, a sun or moon,
+// twinkling stars, cloud text sampled from a texture and dispersed around the pointer, and grain.
 
 export const VERTEX = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}'
 
 export const FRAGMENT = `precision highp float;
-uniform vec2 r,m;uniform float t,mp,stars,sc,txtOn,g,warm;uniform vec3 c0,c1,c2,c3,sun;uniform sampler2D tx;
+uniform vec2 r,m;uniform float t,mp,stars,sc,txtOn,g,warm,veil;uniform vec3 c0,c1,c2,c3,sun,vc;uniform sampler2D tx;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+1.),f.x),f.y);}
 float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*n(p);p=p*2.03+17.;a*=.5;}return v;}
@@ -22,6 +23,7 @@ vec3 s3=mix(mix(vec3(.96,.98,1.),vec3(1.,.9,.72),warm),vec3(.93,.95,1.),sun.z);
 col+=s3*(.5*smoothstep(.066,.056,sl)+(.12+.14*warm)*exp(-sl*6.))*(1.-.45*sun.z);
 vec2 gp=floor(gl_FragCoord.xy/3.);float st=step(.9974,h(gp))*(.55+.45*sin(t*2.+h(gp+3.)*40.));
 col+=st*stars*.9;
+col=mix(col,vc,veil);
 vec2 tu=uv;tu.y-=sc;
 vec2 push=(dm/max(d,1e-3))/asp*.075*exp(-d*6.)*mp;
 tu+=(vec2(fbm(uv*4.*asp+t*.12),fbm(uv*4.*asp+7.-t*.1))-.5)*.02-push;
@@ -36,5 +38,5 @@ col=mix(col,cl*(.9+.1*nz),dens*.96);
 col+=(h(gl_FragCoord.xy+fract(t))-.5)*g;
 gl_FragColor=vec4(col,1.);}`
 
-export const UNIFORMS = ['r', 'm', 't', 'mp', 'stars', 'sc', 'txtOn', 'g', 'warm', 'c0', 'c1', 'c2', 'c3', 'sun', 'tx'] as const
+export const UNIFORMS = ['r', 'm', 't', 'mp', 'stars', 'sc', 'txtOn', 'g', 'warm', 'veil', 'c0', 'c1', 'c2', 'c3', 'sun', 'vc', 'tx'] as const
 export type Uniform = (typeof UNIFORMS)[number]
