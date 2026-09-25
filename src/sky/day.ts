@@ -25,13 +25,14 @@ export function dayAt(scroll: number, anchors: readonly Anchor[]): number {
 }
 
 /**
- * Build anchors: dawn starts once the hero is 55% scrolled, each section reaches its own
- * time as it meets the header, and the page's end is the end of the night.
+ * Build anchors: the day starts (at `startProg`, normally dawn) once the hero is 55% scrolled,
+ * each section reaches its own time as it meets the header, and the page's end is the end of
+ * the night.
  * Anchors that would run backwards (e.g. a section shorter than the viewport near the
  * end) are dropped so the mapping stays monotonic.
  */
-export function buildAnchors(heroH: number, maxScroll: number, sections: readonly Anchor[]): Anchor[] {
-  const raw: Anchor[] = [{ at: heroH * 0.55, prog: 0 }, ...sections.map((s) => ({ at: Math.min(s.at, maxScroll), prog: s.prog })), { at: maxScroll, prog: 3 }]
+export function buildAnchors(heroH: number, maxScroll: number, sections: readonly Anchor[], startProg = 0): Anchor[] {
+  const raw: Anchor[] = [{ at: heroH * 0.55, prog: startProg }, ...sections.map((s) => ({ at: Math.min(s.at, maxScroll), prog: s.prog })), { at: maxScroll, prog: 3 }]
   const out: Anchor[] = []
   for (const a of raw) {
     const last = out[out.length - 1]

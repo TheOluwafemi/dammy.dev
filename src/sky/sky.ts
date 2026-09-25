@@ -13,8 +13,8 @@
 
 import { clamp01, inkAt, litePal, palAt, realProg, skyClock, veilAt } from './core.js'
 import { buildAnchors, dayAt, type Anchor } from './day'
-import { clockToProg, phaseName, progToClock, progToHour } from './time'
-import { bodyAt, hourBetween } from './celestial'
+import { clockToProg, hourToProg, phaseName, progToClock, progToHour } from './time'
+import { SUNRISE, bodyAt, heroSky } from './celestial'
 import { drawCloudText } from './cloudText'
 import { FRAGMENT, UNIFORMS, VERTEX, type Uniform } from './shader'
 import { SKY_CONDENSE, markSkyReady } from './events'
@@ -156,17 +156,26 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
       at: el.getBoundingClientRect().top + scrollY - offset,
       prog: clockToProg(el.dataset.skyTime!),
     }))
-    anchors = buildAnchors(heroH, max, sections)
+    // Time never runs backwards on scroll. If it is already past sunrise but before the first
+    // section's time, the scroll day starts from now; otherwise it starts at dawn and the
+    // disk fades across the hero instead of rewinding (see `frame`).
+    const firstHour = sections.length ? progToHour(sections[0].prog) : SUNRISE
+    walkFromNow = realHour >= SUNRISE && realHour < firstHour
+    anchors = buildAnchors(heroH, max, sections, walkFromNow ? hourToProg(realHour) : 0)
   }
+  let walkFromNow = false
 
   let realHour = 12
   function realNow() {
     const now = Date.now()
     if (now - realAt > 30_000) {
       const d = skyClock(location.search)
-      realHour = d.getHours() + d.getMinutes() / 60
+      const h = d.getHours() + d.getMinutes() / 60
+      const changed = h !== realHour
+      realHour = h
       real = realProg(realHour)
       realAt = now
+      if (changed) measure()
     }
     return real
   }
@@ -207,7 +216,9 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
 
     // Sun and moon follow the clock: the visitor's hour on the hero, the scroll-clock hour once
     // past it, walked between in time as the hero scrolls away. Lite pages sit mid-morning.
-    const hour = home ? hourBetween(realHour, progToHour(day), tH) : 10
+    // Across the hero: walk forward from now when the scroll day starts from now; otherwise fade
+    // the disk out where it is and back in at the scroll day's position, so it never rewinds.
+    const { hour, alpha: sunAlpha } = home ? heroSky(realHour, progToHour(day), tH, walkFromNow) : { hour: 10, alpha: 1 }
     const body = bodyAt(hour)
     const moon = body.moon
     const sunX = body.x
@@ -238,6 +249,7 @@ export function startSky(canvas: HTMLCanvasElement, mode: Mode) {
     gl!.uniform3fv(U.c2, cols[2])
     gl!.uniform3fv(U.c3, cols[3])
     gl!.uniform3f(U.sun, sunX, sunY, moon)
+    gl!.uniform1f(U.sa, sunAlpha)
     gl!.activeTexture(gl!.TEXTURE0)
     gl!.bindTexture(gl!.TEXTURE_2D, tex)
     gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4)

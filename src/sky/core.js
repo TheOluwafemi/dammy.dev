@@ -42,12 +42,17 @@ export function hexRgb(h) {
   return [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255)
 }
 
-/** Local decimal hour (e.g. 18.5) -> sun progress in 0..3 (spec §5.2). */
+/**
+ * Local decimal hour (e.g. 18.5) -> sky progress in 0..3 (0 dawn, 1 day, 2 dusk, 3 night).
+ * Realistic rather than the spec's (§5.2), which kept dawn colours until noon: dawn around
+ * sunrise, full day by 08:30, day until 16:00, dusk at sunset (19:30, see celestial.ts), night by 22:00.
+ */
 export function realProg(hr) {
   if (hr < 5) return 3
-  if (hr < 12) return (hr - 5) / 7
-  if (hr < 18.5) return 1 + (hr - 12) / 6.5
-  if (hr < 22) return 2 + (hr - 18.5) / 3.5
+  if (hr < 8.5) return (hr - 5) / 3.5
+  if (hr < 16) return 1
+  if (hr < 19.5) return 1 + (hr - 16) / 3.5
+  if (hr < 22) return 2 + (hr - 19.5) / 2.5
   return 3
 }
 

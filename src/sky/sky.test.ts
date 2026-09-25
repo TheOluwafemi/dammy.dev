@@ -3,18 +3,27 @@ import { readFileSync } from 'node:fs'
 import { gzipSync } from 'node:zlib'
 import { INK_FLIP, PAL_HEX, hexRgb, inkAt, litePal, palAt, realProg, skyClock, skyGradient, veilAt } from './core.js'
 import { buildAnchors, dayAt } from './day'
-import { clockToProg, heroPhase, phaseName, progToClock, timeLine } from './time'
+import { clockToProg, heroPhase, hourToProg, phaseName, progToClock, progToHour, timeLine } from './time'
 import { bootScript } from './bootstrap'
-import { bodyAt, hourBetween, SUNRISE, SUNSET, MOONRISE, MOONSET } from './celestial'
+import { bodyAt, heroSky, hourBetween, SUNRISE, SUNSET, MOONRISE, MOONSET } from './celestial'
 
-describe('realProg (spec §5.2)', () => {
-  it('maps the clock onto dawn, day, dusk and night', () => {
+describe('realProg', () => {
+  it('maps the clock onto dawn, day, dusk and night, realistically', () => {
     expect(realProg(3)).toBe(3)
     expect(realProg(5)).toBe(0)
+    expect(realProg(8.5)).toBe(1) // full day by half past eight
     expect(realProg(12)).toBe(1)
-    expect(realProg(18.5)).toBe(2)
-    expect(realProg(21.99)).toBeCloseTo(2.997, 2)
+    expect(realProg(16)).toBe(1)
+    expect(realProg(19.5)).toBe(2) // dusk at sunset
     expect(realProg(22)).toBe(3)
+  })
+  it('never runs backwards through the day', () => {
+    let last = -1
+    for (let m = 5 * 60; m < 22 * 60; m++) {
+      const p = realProg(m / 60)
+      expect(p).toBeGreaterThanOrEqual(last)
+      last = p
+    }
   })
 })
 
@@ -98,8 +107,8 @@ describe('clock labels (spec §5.3)', () => {
     expect(phaseName(clockToProg('18:30'))).toBe('dusk')
     expect(phaseName(clockToProg('23:00'))).toBe('night')
   })
-  it('names the hero phase', () => {
-    expect([0.2, 1, 2, 3].map(heroPhase)).toEqual(['dawn', 'daytime', 'dusk', 'night'])
+  it('names the hero phase from the hour', () => {
+    expect([6, 8.5, 14, 18.5, 23, 3].map(heroPhase)).toEqual(['dawn', 'morning', 'afternoon', 'dusk', 'night', 'night'])
   })
   it('writes the time pill', () => {
     expect(timeLine(new Date('2026-09-24T14:05:00Z'))).toMatch(/for me in the UK|Same time as me/)
@@ -180,14 +189,14 @@ describe('head bootstrap', () => {
   })
 })
 
-describe('sun and moon (east on the left, west on the right)', () => {
+describe('sun and moon (facing north: east on the right, west on the left)', () => {
   const HIDDEN = -0.06 // the disk's radius is about 0.06 of the screen height
-  it('rises in the east and sets in the west, below the screen', () => {
+  it('rises in the east (right) and sets in the west (left), below the screen', () => {
     const rise = bodyAt(SUNRISE)
     const set = bodyAt(SUNSET)
     expect(rise.moon).toBe(0)
-    expect(rise.x).toBeLessThan(0.1)
-    expect(set.x).toBeGreaterThan(0.9)
+    expect(rise.x).toBeGreaterThan(0.9)
+    expect(set.x).toBeLessThan(0.1)
     expect(rise.y).toBeLessThan(HIDDEN)
     expect(set.y).toBeLessThan(HIDDEN)
   })
@@ -196,10 +205,10 @@ describe('sun and moon (east on the left, west on the right)', () => {
     expect(noon.y).toBeGreaterThan(0.8)
     expect(Math.abs(noon.x - 0.5)).toBeLessThan(0.02)
   })
-  it('brings the moon up in the east after sunset and down in the west before dawn', () => {
+  it('brings the moon up in the east (right) after sunset and down in the west (left) before dawn', () => {
     expect(bodyAt(MOONRISE).moon).toBe(1)
-    expect(bodyAt(MOONRISE).x).toBeLessThan(0.1)
-    expect(bodyAt(MOONSET - 0.001).x).toBeGreaterThan(0.9)
+    expect(bodyAt(MOONRISE).x).toBeGreaterThan(0.9)
+    expect(bodyAt(MOONSET - 0.001).x).toBeLessThan(0.1)
     expect(bodyAt(0.5).moon).toBe(1)
     expect(bodyAt(0.5).y).toBeGreaterThan(0.6)
   })
@@ -219,5 +228,28 @@ describe('sun and moon (east on the left, west on the right)', () => {
     expect(hourBetween(14, 5.5, 0.5)).toBeCloseTo(9.75, 5)
     expect(hourBetween(14, 5.5, 0)).toBe(14)
     expect(hourBetween(14, 5.5, 1)).toBeCloseTo(5.5, 5)
+  })
+})
+
+describe('scrolling never runs time backwards', () => {
+  it('inverts hour and progress', () => {
+    for (const h of [5.5, 6.2, 12, 16, 18.5, 23]) expect(progToHour(hourToProg(h))).toBeCloseTo(h, 6)
+  })
+  it('starts the scroll day from now when now is between sunrise and the first section', () => {
+    const real = 6.2 // e.g. 06:12, before the Now section's 06:40
+    const anchors = buildAnchors(900, 6000, [{ at: 1000, prog: clockToProg('06:40') }, { at: 2000, prog: clockToProg('12:10') }], hourToProg(real))
+    let last = -Infinity
+    for (let s = 0; s <= 2000; s += 10) {
+      const tH = Math.min(1, s / (900 * 0.8))
+      const { hour, alpha } = heroSky(real, progToHour(dayAt(s, anchors)), tH, true)
+      expect(alpha).toBe(1)
+      expect(hour).toBeGreaterThanOrEqual(last - 1e-9)
+      last = hour
+    }
+  })
+  it('otherwise hides the disk at the moment it jumps', () => {
+    expect(heroSky(14, 5.6, 0.5, false).alpha).toBe(0)
+    expect(heroSky(14, 5.6, 0, false)).toEqual({ hour: 14, alpha: 1 })
+    expect(heroSky(14, 5.6, 1, false)).toEqual({ hour: 5.6, alpha: 1 })
   })
 })

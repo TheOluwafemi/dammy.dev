@@ -34,7 +34,11 @@ export function progToClock(p: number): string {
 /** Inverse of progToClock for a section label such as "12:10". */
 export function clockToProg(label: string): number {
   const [h, m] = label.split(':').map(Number)
-  const hr = h + m / 60
+  return hourToProg(h + m / 60)
+}
+
+/** Inverse of progToHour: decimal hour -> day progress, clamped to 0..3. */
+export function hourToProg(hr: number): number {
   if (hr <= KEYS[0][1]) return 0
   for (let i = 0; i < KEYS.length - 1; i++) {
     const [p0, h0] = KEYS[i]
@@ -49,9 +53,13 @@ export function phaseName(p: number): string {
   return p < 0.75 ? 'dawn' : p < 1.4 ? 'midday' : p < 1.8 ? 'afternoon' : p < 2.6 ? 'dusk' : 'night'
 }
 
-/** Phase word for the hero eyebrow ("Right now it's … where you are"). */
-export function heroPhase(rp: number): string {
-  return rp < 0.75 ? 'dawn' : rp < 1.75 ? 'daytime' : rp < 2.6 ? 'dusk' : 'night'
+/** Phase word for the hero eyebrow ("Right now it's … where you are"), from the local hour. */
+export function heroPhase(hr: number): string {
+  if (hr >= 5 && hr < 7) return 'dawn'
+  if (hr >= 7 && hr < 12) return 'morning'
+  if (hr >= 12 && hr < 17) return 'afternoon'
+  if (hr >= 17 && hr < 20.5) return 'dusk'
+  return 'night'
 }
 
 /** Hours and minutes in London, whatever the visitor's zone. */

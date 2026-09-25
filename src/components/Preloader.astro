@@ -57,7 +57,8 @@
     border-radius: 50%;
     opacity: 0.45;
   }
-  /* A zero-size arm at the arc's centre; rotating it 0 -> 180deg carries the sun across. */
+  /* A zero-size arm at the arc's centre; rotating it 0 -> -180deg carries the sun from the
+     east (right) over the top to the west (left), like the sky's. */
   .arm {
     position: absolute;
     inset-inline-start: 100px;
@@ -67,7 +68,7 @@
   }
   .sun {
     position: absolute;
-    inset-inline-start: -106px;
+    inset-inline-start: 94px;
     inset-block-start: -6px;
     inline-size: 12px;
     block-size: 12px;
@@ -147,7 +148,7 @@
       const elapsed = performance.now() - t0
       const target = (Number(fonts) + Number(sky) + Math.min(1, elapsed / minTime)) / 3
       p = hold ? (Math.sin(elapsed / 900 - Math.PI / 2) + 1) / 2 : p + (target - p) * (reduce ? 1 : 0.07)
-      arm.style.transform = `rotate(${(p * 180).toFixed(1)}deg)`
+      arm.style.transform = `rotate(${(-p * 180).toFixed(1)}deg)`
       pct.textContent = `${Math.round(p * 100)}%`
       if (!hold && p > 0.985 && fonts && sky && elapsed >= minTime) return finish()
       requestAnimationFrame(step)
