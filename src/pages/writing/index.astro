@@ -1,5 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro'
+import SectionHead from '../../components/SectionHead.astro'
+import PostCards from '../../components/PostCards.astro'
 import { getPosts } from '../../lib/writing'
 import { elsewhere } from '../../data/site'
 
@@ -12,25 +14,17 @@ const posts = await getPosts()
   path="/writing"
 >
   <div class="container page">
-    <h1>Writing</h1>
-    <p class="lede">Notes from building things, mostly Flaghoist. No schedule.</p>
+    <SectionHead left="Notes from building things" name="Writing" />
+    <h1 class="page-title">Writing</h1>
+    <PostCards posts={posts} />
 
-    <ul role="list" class="list">
-      {posts.map((p) => (
-        <li class="item">
-          <h2><a class="item-link" href={`/writing/${p.id}`}>{p.data.title}</a></h2>
-          <p>{p.data.summary}</p>
-        </li>
-      ))}
-    </ul>
-
-    <section class="elsewhere" aria-labelledby="elsewhere-h">
-      <h2 id="elsewhere-h">Published elsewhere</h2>
-      <ul role="list" class="list">
+    <section class="sheet elsewhere" aria-labelledby="elsewhere-title">
+      <h2 id="elsewhere-title">Published elsewhere</h2>
+      <ul role="list">
         {elsewhere.map((e) => (
-          <li class="item">
-            <h3><a class="item-link" href={e.href}>{e.title}</a></h3>
-            <p class="eyebrow">{e.site}</p>
+          <li>
+            <a href={e.href} rel="external">{e.title}</a>
+            <span class="site">{e.site}</span>
             <p>{e.summary}</p>
           </li>
         ))}
@@ -40,51 +34,42 @@ const posts = await getPosts()
 </Base>
 
 <style>
-  .page {
-    padding-block: var(--space-12) var(--space-8);
+  .elsewhere {
+    margin-block-start: clamp(48px, 10vh, 120px);
   }
-  h1 {
-    font-size: var(--text-display);
-    color: var(--accent);
+  h2 {
+    margin-block-end: 16px;
+    font: 800 clamp(26px, 3vw, 38px) / 1.05 var(--font-display);
+    letter-spacing: -0.03em;
   }
-  .lede {
-    margin-block: var(--space-4) var(--space-12);
-    color: var(--ink);
-    max-inline-size: var(--measure);
+  ul {
+    border-block-start: 1.5px solid var(--ink);
   }
-  .list {
-    border-block-start: 1px solid var(--rule);
-  }
-  .item {
-    position: relative;
+  li {
     display: grid;
-    gap: var(--space-1);
-    padding-block: var(--space-6);
+    gap: 6px;
+    padding-block: 18px;
     border-block-end: 1px solid var(--rule);
   }
-  .item h2,
-  .item h3 {
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
+  li a {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap);
+    font: 800 clamp(20px, 2vw, 24px) / 1.15 var(--font-display);
+    letter-spacing: -0.02em;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
   }
-  .item p:not(.eyebrow) {
-    max-inline-size: var(--measure);
-    color: var(--ink);
+  .site {
+    font: 500 11px / 1.3 var(--font-mono);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--paper-ink-muted);
   }
-  .item-link {
-    text-decoration: none;
-  }
-  .item-link::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-  }
-  .elsewhere {
-    margin-block-start: var(--space-16);
-  }
-  .elsewhere > h2 {
-    margin-block-end: var(--space-6);
-    font-size: var(--text-xl);
-    color: var(--accent);
+  li p {
+    max-inline-size: 60ch;
+    font: 400 15px / 1.55 var(--font-body);
   }
 </style>

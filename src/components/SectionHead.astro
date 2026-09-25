@@ -1,18 +1,18 @@
 ---
-// The row every home section opens with (spec §4.6): TIME · PHASE ——— NAME.
+// The row every section opens with (spec §4.6): TIME · PHASE ——— NAME.
 // When the section has no big heading of its own, the name is the section's <h2>.
 interface Props {
-  time: string
-  phase: string
+  /** Left of the rule, e.g. "12:10 · Midday". */
+  left: string
   name: string
   /** id for the <h2>, when the name is the section's heading. */
   headingId?: string
 }
-const { time, phase, name, headingId } = Astro.props
+const { left, name, headingId } = Astro.props
 ---
 
 <div class="section-head">
-  <span aria-hidden="true">{time} · {phase}</span>
+  <span aria-hidden="true">{left}</span>
   <span class="line" aria-hidden="true"></span>
   {headingId ? <h2 id={headingId} class="name">{name}</h2> : <span class="name" aria-hidden="true">{name}</span>}
 </div>

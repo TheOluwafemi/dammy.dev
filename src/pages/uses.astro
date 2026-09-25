@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro'
+import SectionHead from '../components/SectionHead.astro'
 
 // Hardware, editor and terminal were read off the machine this site was built on.
 // TODO(you): correct anything that is out of date, and add what only you know
@@ -45,67 +46,59 @@ const groups = [
   path="/uses"
 >
   <div class="container page">
-    <h1>Uses</h1>
-    <p class="lede">What I work with.</p>
+    <SectionHead left="What I work with" name="Uses" />
+    <h1 class="page-title">Uses</h1>
 
-    {groups.map((g) => (
-      <section class="group">
-        <h2>{g.title}</h2>
-        <dl>
-          {g.items.map(([k, v]) => (
-            <div>
-              <dt>{k}</dt>
-              <dd>{v}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-    ))}
+    <div class="sheet groups">
+      {groups.map((g) => (
+        <section class="group" aria-labelledby={`uses-${g.title}`}>
+          <h2 id={`uses-${g.title}`}>{g.title}</h2>
+          <dl>
+            {g.items.map(([k, v]) => (
+              <div>
+                <dt>{k}</dt>
+                <dd>{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))}
+    </div>
   </div>
 </Base>
 
 <style>
-  .page {
-    padding-block: var(--space-12) var(--space-8);
-    max-inline-size: calc(var(--content-max) - 200px);
-    margin-inline: auto;
+  .groups {
+    display: grid;
+    gap: clamp(28px, 5vh, 48px);
   }
-  h1 {
-    font-size: var(--text-display);
-    color: var(--accent);
-  }
-  .lede {
-    margin-block: var(--space-4) var(--space-12);
-    color: var(--ink);
-  }
-  .group {
-    margin-block-end: var(--space-12);
-  }
-  .group h2 {
-    margin-block-end: var(--space-4);
-    font-size: var(--text-xl);
-    color: var(--accent);
+  h2 {
+    margin-block-end: 12px;
+    font: 800 clamp(22px, 2.4vw, 30px) / 1.1 var(--font-display);
+    letter-spacing: -0.025em;
   }
   dl {
-    border-block-start: 1px solid var(--rule);
+    border-block-start: 1.5px solid var(--ink);
   }
   dl > div {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-1) var(--space-8);
-    padding-block: var(--space-3);
+    gap: 4px 32px;
+    padding-block: 14px;
     border-block-end: 1px solid var(--rule);
   }
   @media (min-width: 40rem) {
     dl > div {
-      grid-template-columns: 10rem minmax(0, 1fr);
+      grid-template-columns: 11rem minmax(0, 1fr);
     }
   }
   dt {
-    color: var(--ink);
-    font-size: var(--text-sm);
+    font: 500 12px / 1.5 var(--font-mono);
+    letter-spacing: 0.06em;
+    color: var(--paper-ink-muted);
   }
   dd {
     margin: 0;
+    font: 400 16px / 1.55 var(--font-body);
   }
 </style>

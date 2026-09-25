@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro'
+import SectionHead from '../components/SectionHead.astro'
 import { experience, education, years } from '../data/experience'
 import { site } from '../data/site'
 ---
@@ -10,91 +11,67 @@ import { site } from '../data/site'
   path="/about"
 >
   <div class="container page">
-    <h1>About</h1>
+    <SectionHead left={site.location} name="About" />
+    <h1 class="page-title">About</h1>
+    <p class="lead">
+      I build developer tools and the products around them. Eight years on the front end of banking, fintech and a crypto exchange, and lately lower down the stack.
+    </p>
 
-    <div class="prose intro">
-      <p>
-        I'm Damilola Oluwafemi, a software engineer based in the {site.location}. I build developer tools and the products around them.
-      </p>
-      <p>
-        I started on the front end at a bank in Lagos and have spent most of my career on products where money moves: banking, fintech and a crypto exchange. Lately I've been working lower down the stack, on infrastructure that other engineers build on. <a class="link" href="/work/flaghoist">Flaghoist</a> is the current example.
-      </p>
-    </div>
-
-    <section aria-labelledby="how-h" class="block">
-      <h2 id="how-h">How I work</h2>
+    <div class="sheet">
       <div class="prose">
+        <p>
+          I started on the front end at a bank in Lagos and have spent most of my career on products where money moves: banking, fintech and a crypto exchange. Lately I've been working on infrastructure that other engineers build on. <a href="/work/flaghoist">Flaghoist</a> is the current example.
+        </p>
+
+        <h2>How I work</h2>
         <p>I like small interfaces I can verify. If a claim matters, I test it against reality before I make it, and I write down where a project loses as plainly as where it wins.</p>
         <p>I would rather ship something narrow that is correct than something broad that is nearly right, and I try to leave the reasons in the code and the repository, not in my head.</p>
-      </div>
-    </section>
 
-    <section aria-labelledby="exp-h" class="block">
-      <h2 id="exp-h">Experience</h2>
+        <h2>Experience</h2>
+      </div>
       <ol role="list" class="ladder">
         {experience.map((r) => (
           <li>
-            <div class="when">{years(r)}</div>
+            <p class="when">{years(r)}</p>
             <div>
-              <h3>
-                {r.url ? <a class="link" href={r.url}>{r.org}</a> : r.org}
-                <span class="role">{r.role}{r.orgNote ? `, ${r.orgNote}` : ''} · {r.where}</span>
-              </h3>
-              <p>{r.highlight}</p>
+              <h3>{r.url ? <a href={r.url}>{r.org}</a> : r.org}</h3>
+              <p class="role">{r.role}{r.orgNote ? `, ${r.orgNote}` : ''} · {r.where}</p>
+              <p class="highlight">{r.highlight}</p>
             </div>
           </li>
         ))}
       </ol>
       <p class="cv"><a class="btn btn-outline" href="/cv.pdf">Download my CV (PDF)</a></p>
-    </section>
 
-    <section aria-labelledby="edu-h" class="block">
-      <h2 id="edu-h">Education</h2>
-      <p class="edu"><strong>{education.degree}</strong><br />{education.school}, {education.where}</p>
-    </section>
-
-    <section aria-labelledby="life-h" class="block">
-      <h2 id="life-h">Outside work</h2>
       <div class="prose">
+        <h2>Education</h2>
+        <p><strong>{education.degree}</strong><br />{education.school}, {education.where}</p>
+
+        <h2>Outside work</h2>
         <p>My hobbies take up a large chunk of my leisure. I love to travel, play FC25, listen to delightful music, or take evening strolls.</p>
       </div>
-    </section>
+    </div>
   </div>
 </Base>
 
 <style>
-  .page {
-    padding-block: var(--space-12) var(--space-8);
-    max-inline-size: calc(var(--content-max) - 200px);
-    margin-inline: auto;
-  }
-  h1 {
-    font-size: var(--text-display);
-    color: var(--accent);
-    margin-block-end: var(--space-8);
-  }
-  .intro {
-    font-size: var(--text-lg);
-    line-height: 1.5;
-  }
-  .block {
-    margin-block-start: var(--space-16);
-  }
-  .block > h2 {
-    margin-block-end: var(--space-6);
-    font-size: var(--text-xl);
-    color: var(--accent);
+  .lead {
+    max-inline-size: 30ch;
+    margin-block-end: clamp(28px, 5vh, 56px);
+    font: var(--t-writing-lead);
+    letter-spacing: var(--ls-writing-lead);
+    text-shadow: var(--glow);
+    text-wrap: balance;
   }
   .ladder {
-    border-block-start: 1px solid var(--rule);
-    padding: 0;
-    list-style: none;
+    margin-block-start: 20px;
+    border-block-start: 1.5px solid var(--ink);
   }
   .ladder li {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-1) var(--space-8);
-    padding-block: var(--space-6);
+    gap: 4px 32px;
+    padding-block: 22px;
     border-block-end: 1px solid var(--rule);
   }
   @media (min-width: 48rem) {
@@ -102,30 +79,28 @@ import { site } from '../data/site'
       grid-template-columns: 11rem minmax(0, 1fr);
     }
   }
-  .when {
-    font-size: var(--text-sm);
-    color: var(--ink);
-    font-variant-numeric: tabular-nums;
+  .when,
+  .role {
+    font: 500 12px / 1.4 var(--font-mono);
+    letter-spacing: 0.06em;
+    color: var(--paper-ink-muted);
   }
   .ladder h3 {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-1) var(--space-3);
-    font-family: var(--font-display);
-    font-size: var(--text-lg);
+    font: 800 clamp(22px, 2.2vw, 28px) / 1.1 var(--font-display);
+    letter-spacing: -0.025em;
+  }
+  .ladder h3 a {
+    text-decoration: none;
   }
   .role {
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    color: var(--ink);
+    margin-block-start: 6px;
   }
-  .ladder p {
-    margin-block-start: var(--space-2);
-    max-inline-size: var(--measure);
-    color: var(--ink);
+  .highlight {
+    max-inline-size: 60ch;
+    margin-block-start: 8px;
+    font: 400 16px / 1.6 var(--font-body);
   }
   .cv {
-    margin-block-start: var(--space-8);
+    margin-block: 28px 8px;
   }
 </style>

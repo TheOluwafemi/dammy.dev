@@ -7,7 +7,7 @@ const tiles = [...now.tiles, { label: 'Updated', value: now.updated }]
 
 <section id="now" class="now container" data-sky-time="06:40" aria-labelledby="now-title">
   <div class="inner">
-    <SectionHead time="06:40" phase="Dawn" name="Now" headingId="now-title" />
+    <SectionHead left="06:40 · Dawn" name="Now" headingId="now-title" />
     <p class="statement">{now.statement}</p>
     <ul role="list" class="tiles">
       {tiles.map((t) => (

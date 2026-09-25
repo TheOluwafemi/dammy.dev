@@ -22,7 +22,10 @@ export interface OgCard {
 }
 
 /** 1200x630 PNG, built at deploy time. Palette matches the dark theme tokens. */
+/** 1200x630 PNG, built at deploy time, on the sky's night palette (the site's no-JS look). */
 export async function renderOg({ eyebrow, title, summary }: OgCard): Promise<Buffer> {
+  const ink = '#fbf5ff'
+  const soft = 'rgba(251,245,255,0.72)'
   const tree = h(
     {
       flexDirection: 'column',
@@ -30,18 +33,18 @@ export async function renderOg({ eyebrow, title, summary }: OgCard): Promise<Buf
       width: '100%',
       height: '100%',
       padding: '72px 80px',
-      background: '#0f0f1b',
-      color: '#fdfdff',
+      backgroundImage: 'linear-gradient(160deg, #1d2150, #5b3e9e 60%, #ffb65e)',
+      color: ink,
       fontFamily: 'Figtree',
     },
     [
-      h({ fontSize: 30, fontWeight: 500, color: '#a4a4bd' }, 'dammy.dev'),
-      h({ flexDirection: 'column', gap: 20 }, [
-        h({ fontSize: 26, color: '#a4a4bd', letterSpacing: 4, textTransform: 'uppercase' }, eyebrow),
-        h({ fontFamily: 'Bricolage Grotesque', fontWeight: 800, fontSize: title.length > 18 ? 96 : 124, lineHeight: 1, letterSpacing: '-0.04em', color: '#ffb65e' }, title),
-        h({ fontSize: 36, lineHeight: 1.35, color: '#fdfdff', maxWidth: 940 }, summary),
+      h({ fontFamily: 'Bricolage Grotesque', fontWeight: 800, fontSize: 34, letterSpacing: '-0.01em' }, 'dammy.dev'),
+      h({ flexDirection: 'column', gap: 22 }, [
+        h({ fontSize: 24, color: soft, letterSpacing: 4, textTransform: 'uppercase' }, eyebrow),
+        h({ fontFamily: 'Bricolage Grotesque', fontWeight: 800, fontSize: title.length > 18 ? 100 : 132, lineHeight: 0.95, letterSpacing: '-0.05em' }, title),
+        h({ fontSize: 34, lineHeight: 1.35, maxWidth: 960 }, summary),
       ]),
-      h({ fontSize: 28, color: '#a4a4bd' }, 'Damilola Oluwafemi · Software engineer'),
+      h({ fontSize: 26, color: soft }, 'Damilola Oluwafemi · Software engineer · United Kingdom'),
     ],
   )
   const svg = await satori(tree as never, { width: 1200, height: 630, fonts })

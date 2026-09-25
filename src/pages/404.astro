@@ -1,10 +1,22 @@
 ---
 import Base from '../layouts/Base.astro'
+import SectionHead from '../components/SectionHead.astro'
 ---
 
 <Base title="Not found — Damilola Oluwafemi" description="That page doesn't exist.">
-  <div class="container" style="padding-block: var(--space-24)">
-    <h1 style="font-size: var(--text-display); color: var(--accent)">Not found</h1>
-    <p style="margin-block-start: var(--space-4)">That page doesn't exist. <a href="/">Back home</a>.</p>
+  <div class="container page">
+    <SectionHead left="404" name="Not found" />
+    <h1 class="page-title">Lost in the clouds</h1>
+    <p class="text">That page doesn't exist, or it moved.</p>
+    <p class="actions"><a class="btn btn-primary" href="/">Back home</a></p>
   </div>
 </Base>
+
+<style>
+  .text {
+    font: var(--t-hero-sub);
+  }
+  .actions {
+    margin-block-start: 28px;
+  }
+</style>

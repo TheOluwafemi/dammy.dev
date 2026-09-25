@@ -1,7 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro'
+import SectionHead from '../../components/SectionHead.astro'
+import WorkBoard from '../../components/WorkBoard.astro'
 import NpmPackages from '../../components/NpmPackages.astro'
-import { getWork, hrefFor, isExternal, kindLabel, years } from '../../lib/work'
+import { getWork } from '../../lib/work'
 import { getPackages, roughly, summarise } from '../../lib/npm'
 
 const work = await getWork()
@@ -15,33 +17,13 @@ const all = summarise(packages)
   path="/work"
 >
   <div class="container page">
-    <h1>Work</h1>
-    <p class="lede">Everything I've built that I can point at, newest first.</p>
+    <SectionHead left="Everything, newest first" name="Work" />
+    <h1 class="page-title">All the work</h1>
+    <WorkBoard rows={work} />
 
-    <ul role="list" class="list">
-      {work.map((w) => (
-        <li class="item">
-          <div class="head">
-            <h2>
-              <a
-                class="item-link"
-                href={hrefFor(w)}
-              >{w.data.title}</a>
-            </h2>
-            <span class="years">{years(w)}</span>
-          </div>
-          <p class="eyebrow">{kindLabel(w)}{w.data.role ? ` · ${w.data.role}` : ''}{w.data.org ? `, ${w.data.org}` : ''}</p>
-          <p class="summary">{w.data.summary}</p>
-          <svg class="arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            {isExternal(w) ? <path d="M4 12 12 4M5.5 4H12v6.5" /> : <path d="M3 8h10M9 4l4 4-4 4" />}
-          </svg>
-        </li>
-      ))}
-    </ul>
-
-    <section class="oss" aria-labelledby="oss-title">
+    <section class="sheet oss" aria-labelledby="oss-title">
       <h2 id="oss-title">Open source on npm</h2>
-      <p class="lede">
+      <p class="intro">
         {all.downloads === null ? `${all.count} packages.` : `${all.count} packages, about ${roughly(all.downloads)} downloads a month.`} Most of them exist because I needed them for something else first.
       </p>
       <NpmPackages packages={packages} />
@@ -50,74 +32,16 @@ const all = summarise(packages)
 </Base>
 
 <style>
-  .page {
-    padding-block: var(--space-12) var(--space-8);
-  }
-  h1 {
-    font-size: var(--text-display);
-    color: var(--accent);
-  }
-  .lede {
-    margin-block: var(--space-4) var(--space-12);
-    color: var(--ink);
-    max-inline-size: var(--measure);
-  }
-  .list {
-    border-block-start: 1px solid var(--rule);
-  }
-  .item {
-    position: relative;
-    display: grid;
-    gap: var(--space-1);
-    padding: var(--space-6) var(--space-8) var(--space-6) 0;
-    border-block-end: 1px solid var(--rule);
-  }
-  .head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--space-1) var(--space-4);
+  .oss {
+    margin-block-start: clamp(48px, 10vh, 120px);
   }
   h2 {
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
+    font: 800 clamp(26px, 3vw, 38px) / 1.05 var(--font-display);
+    letter-spacing: -0.03em;
   }
-  .item-link {
-    text-decoration: none;
-  }
-  .item-link::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-  }
-  .years {
-    font-size: var(--text-sm);
-    color: var(--ink);
-    font-variant-numeric: tabular-nums;
-  }
-  .summary {
-    max-inline-size: var(--measure);
-    color: var(--ink);
-  }
-  .arrow {
-    position: absolute;
-    inset-block-end: var(--space-6);
-    inset-inline-end: 0;
-    color: var(--ink);
-    transition: transform var(--dur-fast) var(--ease-out);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .item:hover .arrow {
-      transform: translateX(2px);
-      color: var(--accent);
-    }
-  }
-  .oss {
-    margin-block-start: var(--space-16);
-  }
-  .oss h2 {
-    font-size: var(--text-xl);
-    color: var(--accent);
+  .intro {
+    max-inline-size: 60ch;
+    margin-block: 12px 20px;
+    font: 400 16px / 1.6 var(--font-body);
   }
 </style>

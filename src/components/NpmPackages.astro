@@ -53,8 +53,8 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'
   .row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-1) var(--space-6);
-    padding-block: var(--space-4);
+    gap: 4px 24px;
+    padding-block: 16px;
     border-block-end: 1px solid var(--rule);
   }
   .name {
@@ -63,7 +63,7 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'
     /* >= 24px tall (WCAG 2.5.8) without changing the visible underline position much */
     padding-block: 0.3rem;
     font-family: var(--font-mono);
-    font-size: var(--text-sm);
+    font-size: 14px;
     overflow-wrap: anywhere;
   }
   .dl {
@@ -71,12 +71,12 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'
     grid-row: 1;
     font-variant-numeric: tabular-nums;
     color: var(--ink);
-    font-size: var(--text-sm);
+    font-size: 14px;
   }
   .desc {
     grid-column: 1 / -1;
     color: var(--ink);
-    font-size: var(--text-sm);
+    font-size: 14px;
   }
   @media (min-width: 48rem) {
     .row {
@@ -99,8 +99,8 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('en-GB'
   /* Collapse only when JS is present (no JS: all rows visible, no button). */
   .toggle {
     display: none;
-    margin-block-start: var(--space-6);
-    padding: var(--space-2) var(--space-4);
+    margin-block-start: 24px;
+    padding: 8px 16px;
     background: transparent;
     border: 1px solid var(--rule);
     border-radius: 999px;

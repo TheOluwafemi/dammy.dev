@@ -1,6 +1,6 @@
 ---
 import { render } from 'astro:content'
-import Base from '../../layouts/Base.astro'
+import Article from '../../layouts/Article.astro'
 import { getPosts, formatDate, type Post } from '../../lib/writing'
 
 export async function getStaticPaths() {
@@ -23,57 +23,16 @@ const article = {
   author: { '@type': 'Person', name: 'Damilola Oluwafemi', url: 'https://dammy.dev' },
   mainEntityOfPage: url,
 }
+const eyebrow = d.updated ? `${formatDate(d.published)} · updated ${formatDate(d.updated)}` : formatDate(d.published)
 ---
 
-<Base
-  title={`${d.title} — Damilola Oluwafemi`}
-  description={d.summary}
+<Article
+  title={d.title}
+  summary={d.summary}
+  eyebrow={eyebrow}
+  back={{ href: '/writing', label: 'All writing' }}
   path={`/writing/${entry.id}`}
-  type="article"
   jsonLd={article}
 >
-  <article class="container post">
-    <a class="back link" href="/writing">All writing</a>
-    <header>
-      <p class="eyebrow">
-        <time datetime={d.published.toISOString()}>{formatDate(d.published)}</time>
-        {d.updated && <> · Updated <time datetime={d.updated.toISOString()}>{formatDate(d.updated)}</time></>}
-      </p>
-      <h1>{d.title}</h1>
-      <p class="summary">{d.summary}</p>
-    </header>
-    <div class="prose">
-      <Content />
-    </div>
-  </article>
-</Base>
-
-<style>
-  .post {
-    padding-block: var(--space-8) var(--space-12);
-    max-inline-size: calc(var(--measure) + var(--gutter) * 2);
-    margin-inline: auto;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-8);
-  }
-  .back {
-    justify-self: start;
-    padding-block: 0.3rem;
-    font-size: var(--text-sm);
-    color: var(--ink);
-  }
-  header {
-    display: grid;
-    gap: var(--space-3);
-  }
-  h1 {
-    font-size: clamp(2rem, 1.4rem + 3vw, 3.5rem);
-    color: var(--accent);
-  }
-  .summary {
-    font-size: var(--text-lg);
-    line-height: 1.4;
-    color: var(--ink);
-  }
-</style>
+  <Content />
+</Article>
